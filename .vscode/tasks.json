@@ -1,0 +1,21 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "mvn compile",
+			"type": "shell",
+			"command": "mvn -B compile",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}, {
+			"label": "mvn verify",
+			"type": "shell",
+			"command": "mvn -B verify",
+			"group": "build"
+		}
+	]
+}

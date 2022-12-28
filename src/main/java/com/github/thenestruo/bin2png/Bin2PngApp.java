@@ -1,0 +1,158 @@
+package com.github.thenestruo.bin2png;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+import javax.imageio.ImageIO;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.MissingOptionException;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.thenestruo.util.FileSystemResource;
+import com.github.thenestruo.util.ReadableResource;
+
+public class Bin2PngApp {
+
+	private static final String HELP = "help";
+	private static final String HORIZONTAL = "horizontal";
+	private static final String HIGHLIGHT = "highlight";
+	private static final String SPRITES = "sprites";
+	private static final String CHARSET = "charset";
+
+	private static final String SIZE = "size";
+	private static final String SPACING = "spacing";
+
+	private static final Logger logger = LoggerFactory.getLogger(Bin2PngApp.class);
+
+	public static void main(String[] args) throws ParseException, IOException {
+
+		// Parses the command line
+		final Options options = options();
+		final CommandLine command;
+		try {
+			command = new DefaultParser().parse(options, args);
+		} catch (MissingOptionException e) {
+			showUsage(options);
+			return;
+		}
+
+		// Main options
+		if (showUsage(command, options)) {
+			return;
+		}
+		// setVerbose(command);
+
+		// Reads the binary file
+		final Pair<String, ReadableResource> pair = readBinary(command);
+		final String inputFilePath = pair.getLeft();
+		final ReadableResource inputFile = pair.getRight();
+		if (inputFile == null) {
+			return;
+		}
+		logger.debug("Binary file read: %d bytes", inputFile.sizeOf());
+
+		// Reads the parameters
+		final int size = Integer.parseUnsignedInt(command.getOptionValue(SIZE, Integer.toString(256)));
+		final int spacing = Integer.parseUnsignedInt(command.getOptionValue(SPACING, Integer.toString(2)));
+		Validate.isTrue(size % 256 == 0, "Size %d is not a mutiple of 256", size);
+
+		AbstractVisualizer visualizer =
+				command.hasOption(HIGHLIGHT) ? new HighlightVerticalVisualizer(size, spacing)
+				: command.hasOption(SPRITES) ? new SpritesVerticalVisualizer(size, spacing)
+				: command.hasOption(CHARSET) ? new CharsetHorizontalVisualizer(size, spacing)
+				: command.hasOption(HORIZONTAL) ? new HorizontalVisualizer(size, spacing)
+				: new VerticalVisualizer(size, spacing);
+
+		// Generates the image
+		final BufferedImage image = visualizer.renderImage(inputFile);
+
+		// Writes the PNG file
+		final String pngFilePath = nextPath(command, inputFilePath + ".png");
+		logger.debug("{}x{} image will be written to PNG file {}", image.getWidth(), image.getHeight(), pngFilePath);
+		writePngFile(pngFilePath, image);
+		logger.debug("PNG file {} written", pngFilePath);
+	}
+
+	private static Options options() {
+
+		final Options options = new Options();
+		options.addOption(HELP, "Shows usage");
+		options.addOption(SIZE, true, "Size, in pixels (default: 256)");
+		options.addOption(SPACING, true, "Spacing, in pixels (default: 2)");
+		options.addOption("h", HORIZONTAL, false, "Uses the horizontal visualizer");
+		options.addOption("l", HIGHLIGHT, false, "Uses the padding/ASCII/CALLs/JPs highlight visualizer");
+		options.addOption("s", SPRITES, false, "Uses the 16x16 sprites visualizer");
+		options.addOption("c", CHARSET, false, "Uses the charset graphics visualizer");
+		return options;
+	}
+
+	private static boolean showUsage(final CommandLine command, final Options options) {
+
+		return command.hasOption(HELP)
+				? showUsage(options)
+				: false;
+	}
+
+	private static boolean showUsage(final Options options) {
+
+		// (prints in proper order)
+		final HelpFormatter helpFormatter = new HelpFormatter();
+		final PrintWriter pw = new PrintWriter(new OutputStreamWriter(System.out, StandardCharsets.ISO_8859_1));
+		helpFormatter.printUsage(pw, 114, "java -jar bin2png.jar");
+		for (final Option option : options.getOptions()) {
+			helpFormatter.printOptions(pw, 114, new Options().addOption(option), 2, 4);
+		}
+		helpFormatter.printWrapped(pw, 114, "  <input>    Binary input file");
+		helpFormatter.printWrapped(pw, 114, "  <output>   PNG output file (optional, defaults to <input>.png)");
+		pw.flush();
+
+		return true;
+	}
+
+	private static Pair<String, ReadableResource> readBinary(final CommandLine command) throws IOException {
+
+		final String path = nextPath(command, null);
+		if (path == null) {
+			return Pair.of(null, null);
+		}
+		final File file = new File(path);
+		if (!file.exists()) {
+			logger.warn("Binary input file {} does not exist", file.getAbsolutePath());
+			return Pair.of(path, null);
+		}
+
+		logger.debug("Binary input file {} will be read", file.getAbsolutePath());
+		return Pair.of(path, new FileSystemResource(file));
+	}
+
+	private static void writePngFile(final String path, final BufferedImage image) throws IOException {
+
+		final File file = new File(path);
+		// if (file.exists()) {
+		// 	logger.warn("PNG output file {} already exists", file.getAbsolutePath());
+		// 	return;
+		// }
+
+		ImageIO.write(image, "PNG", file);
+	}
+
+	private static String nextPath(CommandLine command, String defaultValue) {
+
+		final List<String> argList = command.getArgList();
+		return argList.isEmpty() ? defaultValue : argList.remove(0);
+	}
+}
