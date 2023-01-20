@@ -23,8 +23,17 @@ public abstract class AbstractVisualizer {
 		try (final InputStream is = IOUtils.buffer(resource.getInputStream())) {
 			buffer = IOUtils.toByteArray(is);
 		}
+		Validate.isTrue(buffer.length == (int) resource.sizeOf());
+
+		return renderImage(buffer);
+	}
+
+	public final BufferedImage renderImage(final byte[] buffer) throws IOException {
+
+		Validate.notNull(buffer);
+
+		// Reads the data buffer
 		final int size = buffer.length;
-		Validate.isTrue(size == (int) resource.sizeOf());
 
 		// Creates the canvas
 		final BufferedImage image = new BufferedImage(

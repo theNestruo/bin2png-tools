@@ -3,10 +3,12 @@ package com.github.thenestruo.bin2png;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.zip.CRC32;
 
 import javax.imageio.ImageIO;
 
@@ -17,6 +19,8 @@ import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -32,6 +36,8 @@ public class Bin2PngApp {
 	private static final String HIGHLIGHT = "highlight";
 	private static final String SPRITES = "sprites";
 	private static final String CHARSET = "charset";
+
+	private static final String BIOSFONT = "biosfont";
 
 	private static final String SIZE = "size";
 	private static final String SPACING = "spacing";
@@ -75,13 +81,47 @@ public class Bin2PngApp {
 				: command.hasOption(SPRITES) ? new SpritesVerticalVisualizer(size, spacing)
 				: command.hasOption(CHARSET) ? new CharsetHorizontalVisualizer(size, spacing)
 				: command.hasOption(HORIZONTAL) ? new HorizontalVisualizer(size, spacing)
+				: command.hasOption(BIOSFONT) ? new HorizontalVisualizer(256, 0)
 				: new VerticalVisualizer(size, spacing);
 
 		// Generates the image
-		final BufferedImage image = visualizer.renderImage(inputFile);
+		final BufferedImage image;
+		final Long biosFontCrc32;
+		if (command.hasOption(BIOSFONT)) {
+
+			// Reads the data buffer
+			final byte[] buffer;
+			try (final InputStream is = IOUtils.buffer(inputFile.getInputStream())) {
+				buffer = IOUtils.toByteArray(is);
+			}
+
+			// Validates it looks like an MSX BIOS
+			Validate.isTrue(buffer.length == 0x8000);
+			final int cgtablAddress = Byte.toUnsignedInt(buffer[0x0004]) + Byte.toUnsignedInt(buffer[0x0005]) * 0x0100;
+			Validate.isTrue(cgtablAddress <= 0x8000 - 0x0800);
+			for (int i = 0; i < 8; i++) {
+				Validate.isTrue(buffer[cgtablAddress + i] == (byte) 0x00);
+				Validate.isTrue(buffer[cgtablAddress + 0x20 * 8 + i] == (byte) 0x00);
+			}
+
+			final byte[] cgtabl = ArrayUtils.subarray(buffer, cgtablAddress, cgtablAddress + 0x0800);
+			final CRC32 crc32 = new CRC32();
+			crc32.reset();
+			crc32.update(cgtabl);
+
+			image = visualizer.renderImage(cgtabl);
+			biosFontCrc32 = crc32.getValue();
+
+		} else {
+			image = visualizer.renderImage(inputFile);
+			biosFontCrc32 = null;
+		}
 
 		// Writes the PNG file
-		final String pngFilePath = nextPath(command, inputFilePath + ".png");
+		final String pngFilePath = nextPath(command,
+				command.hasOption(BIOSFONT)
+						? String.format("%08x.%s.png", biosFontCrc32, inputFilePath)
+						: String.format("%s.png", inputFilePath));
 		logger.debug("{}x{} image will be written to PNG file {}", image.getWidth(), image.getHeight(), pngFilePath);
 		writePngFile(pngFilePath, image);
 		logger.debug("PNG file {} written", pngFilePath);
@@ -97,6 +137,7 @@ public class Bin2PngApp {
 		options.addOption("l", HIGHLIGHT, false, "Uses the padding/ASCII/CALLs/JPs highlight visualizer");
 		options.addOption("s", SPRITES, false, "Uses the 16x16 sprites visualizer");
 		options.addOption("c", CHARSET, false, "Uses the charset graphics visualizer");
+		options.addOption("f", BIOSFONT, false, "Checks the file is an MSX BIOS image and extracts the font");
 		return options;
 	}
 
