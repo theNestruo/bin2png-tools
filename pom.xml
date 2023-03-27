@@ -28,7 +28,7 @@
 		<maven-shade-plugin.version>3.4.1</maven-shade-plugin.version>
 		<versions-maven-plugin.version>2.15.0</versions-maven-plugin.version>
 		<modernizer-maven-plugin.version>2.5.0</modernizer-maven-plugin.version>
-		<spotbugs-maven-plugin.version>4.7.3.2</spotbugs-maven-plugin.version>
+		<spotbugs-maven-plugin.version>4.7.3.3</spotbugs-maven-plugin.version>
 	</properties>
 
 	<dependencies>
