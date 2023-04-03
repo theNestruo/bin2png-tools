@@ -24,7 +24,7 @@
 		<spotbugs.version>4.7.3</spotbugs.version>
 
 		<maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
-		<extra-enforcer-rules.version>1.6.1</extra-enforcer-rules.version>
+		<extra-enforcer-rules.version>1.6.2</extra-enforcer-rules.version>
 		<maven-shade-plugin.version>3.4.1</maven-shade-plugin.version>
 		<versions-maven-plugin.version>2.15.0</versions-maven-plugin.version>
 		<modernizer-maven-plugin.version>2.6.0</modernizer-maven-plugin.version>
