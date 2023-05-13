@@ -19,12 +19,12 @@
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<commons-lang3.version>3.12.0</commons-lang3.version>
 		<commons-io.version>2.11.0</commons-io.version>
-		<junit.version>4.13.2</junit.version>
-		<logback.version>1.4.6</logback.version>
+		<junit.version>5.9.3</junit.version>
+		<logback.version>1.4.7</logback.version>
 		<spotbugs.version>4.7.3</spotbugs.version>
 
 		<maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
-		<extra-enforcer-rules.version>1.6.1</extra-enforcer-rules.version>
+		<extra-enforcer-rules.version>1.6.2</extra-enforcer-rules.version>
 		<maven-shade-plugin.version>3.4.1</maven-shade-plugin.version>
 		<versions-maven-plugin.version>2.15.0</versions-maven-plugin.version>
 		<modernizer-maven-plugin.version>2.6.0</modernizer-maven-plugin.version>
@@ -64,8 +64,8 @@
 
 		<!-- JUnit -->
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
@@ -122,15 +122,15 @@
 						</goals>
 						<configuration>
 							<createDependencyReducedPom>false</createDependencyReducedPom>
-								<filters>
-									<filter>
-										<artifact>*:*</artifact>
-										<excludes>
-											<exclude>META-INF/MANIFEST.MF</exclude>
-										</excludes>
-									</filter>
-								</filters>
-								<transformers>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/MANIFEST.MF</exclude>
+									</excludes>
+								</filter>
+							</filters>
+							<transformers>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
 									<addHeader>false</addHeader>
 								</transformer>

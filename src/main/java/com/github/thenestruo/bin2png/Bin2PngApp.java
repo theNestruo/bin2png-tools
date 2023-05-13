@@ -44,14 +44,14 @@ public class Bin2PngApp {
 
 	private static final Logger logger = LoggerFactory.getLogger(Bin2PngApp.class);
 
-	public static void main(String[] args) throws ParseException, IOException {
+	public static void main(final String[] args) throws ParseException, IOException {
 
 		// Parses the command line
 		final Options options = options();
 		final CommandLine command;
 		try {
 			command = new DefaultParser().parse(options, args);
-		} catch (MissingOptionException e) {
+		} catch (final MissingOptionException e) {
 			showUsage(options);
 			return;
 		}
@@ -69,14 +69,14 @@ public class Bin2PngApp {
 		if (inputFile == null) {
 			return;
 		}
-		logger.debug("Binary file read: %d bytes", inputFile.sizeOf());
+		logger.debug("Binary file read: {} bytes", inputFile.sizeOf());
 
 		// Reads the parameters
 		final int size = Integer.parseUnsignedInt(command.getOptionValue(SIZE, Integer.toString(256)));
 		final int spacing = Integer.parseUnsignedInt(command.getOptionValue(SPACING, Integer.toString(2)));
 		Validate.isTrue(size % 256 == 0, "Size %d is not a mutiple of 256", size);
 
-		AbstractVisualizer visualizer =
+		final AbstractVisualizer visualizer =
 				command.hasOption(HIGHLIGHT) ? new HighlightVerticalVisualizer(size, spacing)
 				: command.hasOption(SPRITES) ? new SpritesVerticalVisualizer(size, spacing)
 				: command.hasOption(CHARSET) ? new CharsetHorizontalVisualizer(size, spacing)
@@ -191,7 +191,7 @@ public class Bin2PngApp {
 		ImageIO.write(image, "PNG", file);
 	}
 
-	private static String nextPath(CommandLine command, String defaultValue) {
+	private static String nextPath(final CommandLine command, final String defaultValue) {
 
 		final List<String> argList = command.getArgList();
 		return argList.isEmpty() ? defaultValue : argList.remove(0);
