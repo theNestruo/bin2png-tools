@@ -20,7 +20,7 @@
 		<commons-lang3.version>3.12.0</commons-lang3.version>
 		<commons-io.version>2.13.0</commons-io.version>
 		<junit.version>5.9.3</junit.version>
-		<logback.version>1.4.7</logback.version>
+		<logback.version>1.4.8</logback.version>
 		<spotbugs.version>4.7.3</spotbugs.version>
 
 		<maven-enforcer-plugin.version>3.3.0</maven-enforcer-plugin.version>
