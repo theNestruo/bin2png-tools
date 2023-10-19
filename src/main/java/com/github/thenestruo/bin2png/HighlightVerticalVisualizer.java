@@ -1,7 +1,5 @@
 package com.github.thenestruo.bin2png;
 
-import java.io.IOException;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -14,71 +12,84 @@ public class HighlightVerticalVisualizer extends VerticalVisualizer {
 	protected static final Pair<Integer, Integer> ASCII_COLORS = Pair.of(0xB5CEA8, 0x252526);
 	protected static final Pair<Integer, Integer> MUTED_COLORS = Pair.of(0x434442, 0x1e1e1e);
 
-	public HighlightVerticalVisualizer(
-			final int targetHeight,
-			final int hSpacing) throws IOException {
+	public HighlightVerticalVisualizer(final int targetHeight, final int hSpacing) {
 		super(targetHeight, hSpacing);
 	}
 
 	@Override
-	protected Pair<Integer, Integer> colorsFor(byte[] buffer, int address) {
+	protected Pair<Integer, Integer> colorsFor(final byte[] buffer, final int address) {
 
-		return isPadding(buffer, address) ? PADDING_COLORS
-				: isAscii(buffer, address) ? ASCII_COLORS
-				: (isZ80Call(buffer, address)
-						|| isZ80Call(buffer, address + 1)
-						|| isZ80Call(buffer, address + 2)) ? CALL_COLORS
-				: (isZ80Jump(buffer, address)
-						|| isZ80Jump(buffer, address + 1)
-						|| isZ80Jump(buffer, address + 2)) ? JUMP_COLORS
+		return this.isPadding(buffer, address) ? PADDING_COLORS
+				: this.isAscii(buffer, address) ? ASCII_COLORS
+				: (this.isZ80Call(buffer, address)
+						|| this.isZ80Call(buffer, address + 1)
+						|| this.isZ80Call(buffer, address + 2)) ? CALL_COLORS
+				: (this.isZ80Jump(buffer, address)
+						|| this.isZ80Jump(buffer, address + 1)
+						|| this.isZ80Jump(buffer, address + 2)) ? JUMP_COLORS
 				: MUTED_COLORS;
 	}
 
-	private boolean isPadding(byte[] buffer, int address) {
+	private boolean isPadding(final byte[] buffer, final int address) {
 
-		final int value = valueAt(buffer, address);
-		return isPadding(value)
-				&& valueAt(buffer, address - 1) == value
-				&& valueAt(buffer, address + 1) == value;
+		for (int i = -2; i <= 0; i++) {
+			boolean allPadding0 = true;
+			boolean allPadding1 = true;
+			for (int j = i; (j <= (i + 2)) && (allPadding0 || allPadding1); j++) {
+				final int value = this.valueAt(buffer, address + j);
+				allPadding0 &= this.isPadding0(value);
+				allPadding1 &= this.isPadding1(value);
+			}
+			if (allPadding0 || allPadding1) {
+				return true;
+			}
+		}
+		return false;
 	}
 
-	private boolean isAscii(byte[] buffer, int address) {
+	private boolean isAscii(final byte[] buffer, final int address) {
 
-		return isAscii(valueAt(buffer, address - 1))
-				&& isAscii(valueAt(buffer, address))
-				&& isAscii(valueAt(buffer, address + 1));
+		for (int i = -2; i <= 0; i++) {
+			boolean allAscii = true;
+			for (int j = i; (j <= (i + 2)) && allAscii; j++) {
+				allAscii &= this.isAscii(this.valueAt(buffer, address + j));
+			}
+			if (allAscii) {
+				return true;
+			}
+		}
+		return false;
 	}
 
-	private boolean isZ80Call(byte[] buffer, int address) {
+	private boolean isZ80Call(final byte[] buffer, final int address) {
 
-		int value = valueAt(buffer, address);
-		return (value >= 0x40)
-				&& (value <= 0xbf)
+		final int value = this.valueAt(buffer, address);
+		return (value >= 0x40) && (value <= 0xbf)
 				&& ArrayUtils.contains(
-					new int[]{
-						0xcd, 0xdc, 0xfc, 0xd4, 0xc4, 0xf4, 0xec, 0xe4, 0xcc
-					},
-					valueAt(buffer, address - 2));
+						new int[] { 0xcd, 0xdc, 0xfc, 0xd4, 0xc4, 0xf4, 0xec, 0xe4, 0xcc },
+						this.valueAt(buffer, address - 2));
 	}
 
-	private boolean isZ80Jump(byte[] buffer, int address) {
+	private boolean isZ80Jump(final byte[] buffer, final int address) {
 
-		int value = valueAt(buffer, address);
-		return (value >= 0x40)
-				&& (value <= 0xbf)
+		final int value = this.valueAt(buffer, address);
+		return (value >= 0x40) && (value <= 0xbf)
 				&& ArrayUtils.contains(
-					new int[]{
-						0xc3, 0xda, 0xfa, 0xd2, 0xc2, 0xf2, 0xea, 0xe2, 0xca
-					},
-					valueAt(buffer, address - 2));
+						new int[] { 0xc3, 0xda, 0xfa, 0xd2, 0xc2, 0xf2, 0xea, 0xe2, 0xca },
+						this.valueAt(buffer, address - 2));
 	}
 
-	private boolean isPadding(int value) {
+	private boolean isPadding0(final int value) {
 
-		return (value == 0x00) || (value == 0xff);
+		return (value == 0x00);
 	}
 
-	private boolean isAscii(int value) {
+	private boolean isPadding1(final int value) {
+
+		return (value == 0xff);
+	}
+
+	private boolean isAscii(final int value) {
 
 		return CharUtils.isAsciiPrintable((char) value);
 	}

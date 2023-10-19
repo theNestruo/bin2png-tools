@@ -1,7 +1,6 @@
 package com.github.thenestruo.bin2png;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -11,25 +10,28 @@ public class CharsetHorizontalVisualizer extends HorizontalVisualizer {
 
 	public CharsetHorizontalVisualizer(
 			final int targetWidth,
-			final int vSpacing) throws IOException {
+			final int vSpacing) {
 		super(targetWidth, vSpacing);
 	}
 
-	protected int computeImageHeight(int size) {
+	@Override
+	protected int computeImageHeight(final int size) {
 
 		final int rows = ((size - 1) / this.targetWidth) + 1;
 		return (rows * 16) + ((rows - 1) * this.vSpacing);
 	}
 
-	protected Pair<Integer, Integer> locationFor(int address) {
+	@Override
+	protected Pair<Integer, Integer> locationFor(final int address) {
 
 		final int row = address / this.targetWidth;
 		final int x = (address & 0xfff8) % this.targetWidth;
-		final int y = row * (16 + vSpacing);
+		final int y = row * (16 + this.vSpacing);
 		return Pair.of(x, y);
 	}
 
-	protected void renderBlock(byte[] buffer, BufferedImage image, int address) {
+	@Override
+	protected void renderBlock(final byte[] buffer, final BufferedImage image, final int address) {
 
 		final Pair<Integer, Integer> location = this.locationFor(address);
 		final int x = location.getLeft();

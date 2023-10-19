@@ -19,7 +19,7 @@ public class ClassPathResource implements ReadableResource {
 	 * @param path the path of the classpath resource
 	 * @throws IOException if the classpath resource does not exists
 	 */
-	public ClassPathResource(String path) {
+	public ClassPathResource(final String path) {
 		super();
 
 		this.path = Validate.notBlank(path, "The path must not be null nor blank");
@@ -27,7 +27,7 @@ public class ClassPathResource implements ReadableResource {
 		// Checks existence
 		try (InputStream is = this.getInputStream()) {
 			// (no-op)
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			ExceptionUtils.rethrow(e);
 		}
 	}
@@ -35,8 +35,8 @@ public class ClassPathResource implements ReadableResource {
 	@Override
 	public InputStream getInputStream() {
 
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		return classLoader.getResourceAsStream(path);
+		final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		return classLoader.getResourceAsStream(this.path);
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class ClassPathResource implements ReadableResource {
 		try (InputStream is = this.getInputStream()) {
 			return IOUtils.consume(is);
 
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			return -1;
 		}
 	}
