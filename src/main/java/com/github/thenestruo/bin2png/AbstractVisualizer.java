@@ -3,6 +3,7 @@ package com.github.thenestruo.bin2png;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
@@ -16,7 +17,7 @@ public abstract class AbstractVisualizer {
 
 	public final BufferedImage renderImage(final ReadableResource resource) throws IOException {
 
-		Validate.notNull(resource);
+		Objects.requireNonNull(resource);
 
 		// Reads the data buffer
 		final byte[] buffer;
@@ -25,12 +26,12 @@ public abstract class AbstractVisualizer {
 		}
 		Validate.isTrue(buffer.length == (int) resource.sizeOf());
 
-		return renderImage(buffer);
+		return this.renderImage(buffer);
 	}
 
 	public final BufferedImage renderImage(final byte[] buffer) throws IOException {
 
-		Validate.notNull(buffer);
+		Objects.requireNonNull(buffer);
 
 		// Reads the data buffer
 		final int size = buffer.length;
@@ -52,7 +53,7 @@ public abstract class AbstractVisualizer {
 
 	protected abstract int computeImageHeight(int size);
 
-	protected void renderBlock(byte[] buffer, BufferedImage image, int address) {
+	protected void renderBlock(final byte[] buffer, final BufferedImage image, final int address) {
 
 		final Pair<Integer, Integer> location = this.locationFor(address);
 		final int x = location.getLeft();
@@ -63,35 +64,35 @@ public abstract class AbstractVisualizer {
 	protected abstract Pair<Integer, Integer> locationFor(int address);
 
 	protected final void doRenderBlock(
-			byte[] buffer, BufferedImage bufferedImage, int pAddress, int x, int pY, Pair<Integer, Integer> colorsForced) {
+			final byte[] buffer, final BufferedImage bufferedImage, final int pAddress, final int x, final int pY, final Pair<Integer, Integer> colorsForced) {
 
-		for (int y = pY, address = pAddress; y < pY + 8; y++, address++) {
-			final int value = valueAt(buffer, address);
+		for (int y = pY, address = pAddress; y < (pY + 8); y++, address++) {
+			final int value = this.valueAt(buffer, address);
 			final Pair<Integer, Integer> colors =
 					colorsForced != null ? colorsForced : this.colorsFor(buffer, address);
 			this.doRenderLine(bufferedImage, value, x, y, colors);
 		}
 	}
 
-	protected int valueAt(byte[] buffer, int address) {
+	protected int valueAt(final byte[] buffer, final int address) {
 
 		return (address >= 0) && (address < buffer.length)
 				? Byte.toUnsignedInt(buffer[address])
 				: 0x00;
 	}
 
-	protected Pair<Integer, Integer> colorsFor(byte[] buffer, int address) {
+	protected Pair<Integer, Integer> colorsFor(final byte[] buffer, final int address) {
 
-		return colorsFor(valueAt(buffer, address));
+		return this.colorsFor(this.valueAt(buffer, address));
 	}
 
-	protected Pair<Integer, Integer> colorsFor(int value) {
+	protected Pair<Integer, Integer> colorsFor(final int value) {
 
 		return DEFAULT_COLORS;
 	}
 
 	protected final void doRenderLine(
-			BufferedImage bufferedImage, int value, int pX, int y, Pair<Integer, Integer> colors) {
+			final BufferedImage bufferedImage, final int value, final int pX, final int y, final Pair<Integer, Integer> colors) {
 
 		final Integer color1 = colors.getLeft();
 		final Integer color0 = colors.getRight();

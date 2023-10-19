@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 
 /**
@@ -20,7 +19,7 @@ public class FileSystemResource implements ReadableResource {
 	 * Constructor
 	 * @param path the path of the file system resource
 	 */
-	public FileSystemResource(String path) {
+	public FileSystemResource(final String path) {
 		this(new File(Validate.notBlank(path, "The path must not be null nor blank")));
 	}
 
@@ -28,7 +27,7 @@ public class FileSystemResource implements ReadableResource {
 	 * Constructor
 	 * @param file the file
 	 */
-	public FileSystemResource(File file) {
+	public FileSystemResource(final File file) {
 		super();
 
 		this.file = Validate.notNull(file, "The file must not be null");
@@ -38,11 +37,11 @@ public class FileSystemResource implements ReadableResource {
 	public InputStream getInputStream() {
 
 		try {
-			return file.exists() && file.canRead()
-					? new FileInputStream(file)
+			return this.file.exists() && this.file.canRead()
+					? new FileInputStream(this.file)
 					: null;
 
-		} catch (FileNotFoundException e) {
+		} catch (final FileNotFoundException e) {
 			return null;
 		}
 	}
@@ -50,14 +49,14 @@ public class FileSystemResource implements ReadableResource {
 	@Override
 	public long sizeOf() {
 
-		if (file == null) {
+		if (this.file == null) {
 			return -1;
 		}
 
 		try {
-			return FileUtils.sizeOf(file);
+			return FileUtils.sizeOf(this.file);
 
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			return -1;
 		}
 	}

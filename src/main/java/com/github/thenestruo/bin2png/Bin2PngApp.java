@@ -74,7 +74,7 @@ public class Bin2PngApp {
 		// Reads the parameters
 		final int size = Integer.parseUnsignedInt(command.getOptionValue(SIZE, Integer.toString(256)));
 		final int spacing = Integer.parseUnsignedInt(command.getOptionValue(SPACING, Integer.toString(2)));
-		Validate.isTrue(size % 256 == 0, "Size %d is not a mutiple of 256", size);
+		Validate.isTrue((size % 256) == 0, "Size %d is not a mutiple of 256", size);
 
 		final AbstractVisualizer visualizer =
 				command.hasOption(HIGHLIGHT) ? new HighlightVerticalVisualizer(size, spacing)
@@ -97,11 +97,11 @@ public class Bin2PngApp {
 
 			// Validates it looks like an MSX BIOS
 			Validate.isTrue(buffer.length == 0x8000);
-			final int cgtablAddress = Byte.toUnsignedInt(buffer[0x0004]) + Byte.toUnsignedInt(buffer[0x0005]) * 0x0100;
-			Validate.isTrue(cgtablAddress <= 0x8000 - 0x0800);
+			final int cgtablAddress = Byte.toUnsignedInt(buffer[0x0004]) + (Byte.toUnsignedInt(buffer[0x0005]) * 0x0100);
+			Validate.isTrue(cgtablAddress <= (0x8000 - 0x0800));
 			for (int i = 0; i < 8; i++) {
 				Validate.isTrue(buffer[cgtablAddress + i] == (byte) 0x00);
-				Validate.isTrue(buffer[cgtablAddress + 0x20 * 8 + i] == (byte) 0x00);
+				Validate.isTrue(buffer[cgtablAddress + (0x20 * 8) + i] == (byte) 0x00);
 			}
 
 			final byte[] cgtabl = ArrayUtils.subarray(buffer, cgtablAddress, cgtablAddress + 0x0800);
