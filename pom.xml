@@ -10,6 +10,7 @@
 	<properties>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
+		<maven.version.required>3.6.3</maven.version.required>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -17,7 +18,7 @@
 
 		<commons-cli.version>1.8.0</commons-cli.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
-		<commons-lang3.version>3.14.0</commons-lang3.version>
+		<commons-lang3.version>3.15.0</commons-lang3.version>
 		<commons-io.version>2.16.1</commons-io.version>
 		<junit.version>5.10.3</junit.version>
 		<logback.version>1.5.6</logback.version>
@@ -26,9 +27,9 @@
 		<maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
 		<extra-enforcer-rules.version>1.8.0</extra-enforcer-rules.version>
 		<maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
-		<versions-maven-plugin.version>2.17.0</versions-maven-plugin.version>
+		<versions-maven-plugin.version>2.17.1</versions-maven-plugin.version>
 		<modernizer-maven-plugin.version>2.9.0</modernizer-maven-plugin.version>
-		<spotbugs-maven-plugin.version>4.8.6.1</spotbugs-maven-plugin.version>
+		<spotbugs-maven-plugin.version>4.8.6.2</spotbugs-maven-plugin.version>
 	</properties>
 
 	<dependencies>
@@ -98,7 +99,7 @@
 						<configuration>
 							<rules>
 								<requireMavenVersion>
-									<version>3.3.9</version>
+									<version>${maven.version.required}</version>
 								</requireMavenVersion>
 								<enforceBytecodeVersion>
 									<maxJdkVersion>${maven.compiler.target}</maxJdkVersion>
@@ -158,6 +159,13 @@
 						</goals>
 					</execution>
 					<execution>
+						<id>display-parent-updates</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>display-parent-updates</goal>
+						</goals>
+					</execution>
+					<execution>
 						<id>display-plugin-updates</id>
 						<phase>verify</phase>
 						<goals>
@@ -165,6 +173,9 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<ignoredVersions>.+-M.,.+-RC.</ignoredVersions>
+				</configuration>
 			</plugin>
 
 			<!-- Detects uses of legacy APIs which modern Java versions supersede -->
