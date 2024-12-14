@@ -36,11 +36,16 @@ public class Bin2PngApp {
 	private static final String HIGHLIGHT = "highlight";
 	private static final String SPRITES = "sprites";
 	private static final String CHARSET = "charset";
+	private static final String ZX = "zx";
+	private static final String ZXCOLOR = "zxcolor";
 
 	private static final String BIOSFONT = "biosfont";
 
 	private static final String SIZE = "size";
 	private static final String SPACING = "spacing";
+	private static final String START = "start";
+	private static final String WIDTH = "width";
+	private static final String HEIGHT = "height";
 
 	private static final Logger logger = LoggerFactory.getLogger(Bin2PngApp.class);
 
@@ -74,6 +79,8 @@ public class Bin2PngApp {
 		// Reads the parameters
 		final int size = Integer.parseUnsignedInt(command.getOptionValue(SIZE, Integer.toString(256)));
 		final int spacing = Integer.parseUnsignedInt(command.getOptionValue(SPACING, Integer.toString(2)));
+		final int width = Integer.parseUnsignedInt(command.getOptionValue(WIDTH, Integer.toString(0)));
+		final int height = Integer.parseUnsignedInt(command.getOptionValue(HEIGHT, Integer.toString(0)));
 		Validate.isTrue((size % 256) == 0, "Size %d is not a mutiple of 256", size);
 
 		final AbstractVisualizer visualizer =
@@ -82,11 +89,13 @@ public class Bin2PngApp {
 				: command.hasOption(CHARSET) ? new CharsetHorizontalVisualizer(size, spacing)
 				: command.hasOption(HORIZONTAL) ? new HorizontalVisualizer(size, spacing)
 				: command.hasOption(BIOSFONT) ? new HorizontalVisualizer(256, 0)
+				: command.hasOption(ZX) ? new ZxMonochromeVisualizer(width, height)
+				: command.hasOption(ZXCOLOR) ? new ZxColorVisualizer(width, height)
 				: new VerticalVisualizer(size, spacing);
 
 		// Generates the image
 		final BufferedImage image;
-		final Long biosFontCrc32;
+		final String pngFilePath;
 		if (command.hasOption(BIOSFONT)) {
 
 			// Reads the data buffer
@@ -110,18 +119,32 @@ public class Bin2PngApp {
 			crc32.update(cgtabl);
 
 			image = visualizer.renderImage(cgtabl);
-			biosFontCrc32 = crc32.getValue();
+			final Long biosFontCrc32 = crc32.getValue();
+			pngFilePath = nextPath(command, String.format("%08x.%s.png", biosFontCrc32, inputFilePath));
+
+		} else if (command.hasOption(START)) {
+
+			// Reads the data buffer
+			final byte[] buffer;
+			try (final InputStream is = IOUtils.buffer(inputFile.getInputStream())) {
+				buffer = IOUtils.toByteArray(is);
+			}
+
+			// Validates start offset and length
+			final int startOffset = Integer.parseUnsignedInt(command.getOptionValue(START, Integer.toString(0)));
+			Validate.isTrue(buffer.length > startOffset);
+
+			final byte[] subarray = ArrayUtils.subarray(buffer, startOffset, buffer.length);
+
+			image = visualizer.renderImage(subarray);
+			pngFilePath = nextPath(command, String.format("%s.%04x.png", inputFilePath, startOffset));
 
 		} else {
 			image = visualizer.renderImage(inputFile);
-			biosFontCrc32 = null;
-		}
+			pngFilePath = nextPath(command, String.format("%s.png", inputFilePath));
+	}
 
 		// Writes the PNG file
-		final String pngFilePath = nextPath(command,
-				command.hasOption(BIOSFONT)
-						? String.format("%08x.%s.png", biosFontCrc32, inputFilePath)
-						: String.format("%s.png", inputFilePath));
 		logger.debug("{}x{} image will be written to PNG file {}", image.getWidth(), image.getHeight(), pngFilePath);
 		writePngFile(pngFilePath, image);
 		logger.debug("PNG file {} written", pngFilePath);
@@ -133,10 +156,15 @@ public class Bin2PngApp {
 		options.addOption(HELP, "Shows usage");
 		options.addOption(SIZE, true, "Size, in pixels (default: 256)");
 		options.addOption(SPACING, true, "Spacing, in pixels (default: 2)");
+		options.addOption(START, true, "Start offset, in bytes (default: 0)");
+		options.addOption(WIDTH, true, "Width, in pixels (for ZX-ordered graphics visualizer)");
+		options.addOption(HEIGHT, true, "Height, in pixels (for ZX-ordered graphics visualizer)");
 		options.addOption("h", HORIZONTAL, false, "Uses the horizontal visualizer");
 		options.addOption("l", HIGHLIGHT, false, "Uses the padding/ASCII/CALLs/JPs highlight visualizer");
 		options.addOption("s", SPRITES, false, "Uses the 16x16 sprites visualizer");
 		options.addOption("c", CHARSET, false, "Uses the charset graphics visualizer");
+		options.addOption(ZX, false, "Uses the monochrome ZX-ordered graphics visualizer");
+		options.addOption(ZXCOLOR, false, "Uses the ZX-ordered graphics visualizer, followed by CLRTBL data");
 		options.addOption("f", BIOSFONT, false, "Checks the file is an MSX BIOS image and extracts the font");
 		return options;
 	}

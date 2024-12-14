@@ -2,7 +2,7 @@ package com.github.thenestruo.bin2png;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-public class HorizontalVisualizer extends AbstractVisualizer {
+public class HorizontalVisualizer extends AbstractBlockSupportVisualizer {
 
 	protected final int targetWidth;
 	protected final int vSpacing;

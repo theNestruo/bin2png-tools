@@ -10,10 +10,15 @@ usage: java -jar bin2png.jar
   -help           Shows usage
   -size <arg>     Size, in pixels (default: 256)
   -spacing <arg>  Spacing, in pixels (default: 2)
+  -start <arg>    Start offset, in bytes (default: 0)
+  -width <arg>    Width, in pixels (for ZX-ordered graphics visualizer)
+  -height <arg>   Height, in pixels (for ZX-ordered graphics visualizer)
   -h,--horizontal Uses the horizontal visualizer
   -l,--highlight  Uses the padding/ASCII/CALLs/JPs highlight visualizer
   -s,--sprites    Uses the 16x16 sprites visualizer
   -c,--charset    Uses the charset graphics visualizer
+  --zx            Uses the monochrome ZX-ordered graphics visualizer
+  --zxcolor       Uses the ZX-ordered graphics visualizer, followed by CLRTBL data
   -f,--biosfont   Checks the file is an MSX BIOS image and extracts the font
   <input>         Binary input file
   <output>        PNG output file (optional, defaults to <input>.png)
