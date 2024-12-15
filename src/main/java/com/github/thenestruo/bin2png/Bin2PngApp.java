@@ -32,20 +32,22 @@ import com.github.thenestruo.util.ReadableResource;
 public class Bin2PngApp {
 
 	private static final String HELP = "help";
+
+	private static final String START = "start";
+	private static final String WIDTH = "width";
+	private static final String HEIGHT = "height";
+	private static final String IMAGES = "images";
+	private static final String SPACING = "spacing";
+
 	private static final String HORIZONTAL = "horizontal";
 	private static final String HIGHLIGHT = "highlight";
 	private static final String SPRITES = "sprites";
 	private static final String CHARSET = "charset";
 	private static final String ZX = "zx";
 	private static final String ZXCOLOR = "zxcolor";
+	private static final String VGROUP = "vgroup";
 
 	private static final String BIOSFONT = "biosfont";
-
-	private static final String SIZE = "size";
-	private static final String SPACING = "spacing";
-	private static final String START = "start";
-	private static final String WIDTH = "width";
-	private static final String HEIGHT = "height";
 
 	private static final Logger logger = LoggerFactory.getLogger(Bin2PngApp.class);
 
@@ -77,21 +79,25 @@ public class Bin2PngApp {
 		logger.debug("Binary file read: {} bytes", inputFile.sizeOf());
 
 		// Reads the parameters
-		final int size = Integer.parseUnsignedInt(command.getOptionValue(SIZE, Integer.toString(256)));
+		final Integer width = command.hasOption(WIDTH)
+				? Integer.parseUnsignedInt(command.getOptionValue(WIDTH))
+				: null;
+		final Integer height = command.hasOption(HEIGHT)
+				? Integer.parseUnsignedInt(command.getOptionValue(HEIGHT))
+				: null;
+		final int repeat = Integer.parseUnsignedInt(command.getOptionValue(IMAGES, Integer.toString(1)));
 		final int spacing = Integer.parseUnsignedInt(command.getOptionValue(SPACING, Integer.toString(2)));
-		final int width = Integer.parseUnsignedInt(command.getOptionValue(WIDTH, Integer.toString(0)));
-		final int height = Integer.parseUnsignedInt(command.getOptionValue(HEIGHT, Integer.toString(0)));
-		Validate.isTrue((size % 256) == 0, "Size %d is not a mutiple of 256", size);
 
 		final AbstractVisualizer visualizer =
-				command.hasOption(HIGHLIGHT) ? new HighlightVerticalVisualizer(size, spacing)
-				: command.hasOption(SPRITES) ? new SpritesVerticalVisualizer(size, spacing)
-				: command.hasOption(CHARSET) ? new CharsetHorizontalVisualizer(size, spacing)
-				: command.hasOption(HORIZONTAL) ? new HorizontalVisualizer(size, spacing)
-				: command.hasOption(BIOSFONT) ? new HorizontalVisualizer(256, 0)
+				command.hasOption(HIGHLIGHT) ? new HighlightVerticalVisualizer(height, spacing)
+				: command.hasOption(SPRITES) ? new SpritesVerticalVisualizer(height, spacing)
+				: command.hasOption(CHARSET) ? new CharsetHorizontalVisualizer(width, spacing)
+				: command.hasOption(HORIZONTAL) ? new HorizontalVisualizer(width, spacing)
+				: command.hasOption(BIOSFONT) ? new HorizontalVisualizer(0)
 				: command.hasOption(ZX) ? new ZxMonochromeVisualizer(width, height)
 				: command.hasOption(ZXCOLOR) ? new ZxColorVisualizer(width, height)
-				: new VerticalVisualizer(size, spacing);
+				: command.hasOption(VGROUP) ? new GroupedVerticalVisualizer(width, height, repeat, spacing)
+				: new VerticalVisualizer(height, spacing);
 
 		// Generates the image
 		final BufferedImage image;
@@ -131,7 +137,7 @@ public class Bin2PngApp {
 			}
 
 			// Validates start offset and length
-			final int startOffset = Integer.parseUnsignedInt(command.getOptionValue(START, Integer.toString(0)));
+			final int startOffset = Integer.decode(command.getOptionValue(START, Integer.toString(0)));
 			Validate.isTrue(buffer.length > startOffset);
 
 			final byte[] subarray = ArrayUtils.subarray(buffer, startOffset, buffer.length);
@@ -154,17 +160,20 @@ public class Bin2PngApp {
 
 		final Options options = new Options();
 		options.addOption(HELP, "Shows usage");
-		options.addOption(SIZE, true, "Size, in pixels (default: 256)");
-		options.addOption(SPACING, true, "Spacing, in pixels (default: 2)");
+		// options.addOption(SIZE, true, "Size, in pixels (default: 256)");
 		options.addOption(START, true, "Start offset, in bytes (default: 0)");
 		options.addOption(WIDTH, true, "Width, in pixels (for ZX-ordered graphics visualizer)");
 		options.addOption(HEIGHT, true, "Height, in pixels (for ZX-ordered graphics visualizer)");
+		options.addOption(IMAGES, true, "Number of consecutive images (default: 1)");
+		options.addOption(SPACING, true, "Spacing, in pixels (default: 2)");
 		options.addOption("h", HORIZONTAL, false, "Uses the horizontal visualizer");
 		options.addOption("l", HIGHLIGHT, false, "Uses the padding/ASCII/CALLs/JPs highlight visualizer");
 		options.addOption("s", SPRITES, false, "Uses the 16x16 sprites visualizer");
 		options.addOption("c", CHARSET, false, "Uses the charset graphics visualizer");
 		options.addOption(ZX, false, "Uses the monochrome ZX-ordered graphics visualizer");
 		options.addOption(ZXCOLOR, false, "Uses the ZX-ordered graphics visualizer, followed by CLRTBL data");
+		options.addOption(VGROUP, false, "Uses the grouped vertical visualizer");
+		// options.addOption(ZXVERTICAL, false, "Uses the ZX-ordered graphics visualizer, followed by block color data");
 		options.addOption("f", BIOSFONT, false, "Checks the file is an MSX BIOS image and extracts the font");
 		return options;
 	}

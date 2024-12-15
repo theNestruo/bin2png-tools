@@ -1,17 +1,27 @@
 package com.github.thenestruo.bin2png;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class HorizontalVisualizer extends AbstractBlockSupportVisualizer {
 
+	protected static final int DEFAULT_WIDTH = 256;
+
 	protected final int targetWidth;
 	protected final int vSpacing;
 
-	public HorizontalVisualizer(final int targetWidth, final int vSpacing) {
+	public HorizontalVisualizer(final int vSpacing) {
+		this(DEFAULT_WIDTH, vSpacing);
+	}
+
+	public HorizontalVisualizer(final Integer targetWidth, final int vSpacing) {
 		super();
 
-		this.targetWidth = targetWidth;
+		this.targetWidth = ObjectUtils.defaultIfNull(targetWidth, DEFAULT_WIDTH);
 		this.vSpacing = vSpacing;
+
+		Validate.isTrue((this.targetWidth % 8) == 0, "Width %d is not a mutiple of 8", this.targetWidth);
 	}
 
 	@Override

@@ -39,7 +39,7 @@ public class ZxMonochromeVisualizer extends AbstractLineSupportVisualizer {
 		return image;
 	}
 
-	private void renderLine(byte[] buffer, BufferedImage image, int address) {
+	protected void renderLine(byte[] buffer, BufferedImage image, int address) {
 
 		final int value = this.valueAt(buffer, address);
 		final Pair<Integer, Integer> location = this.locationFor(address);
