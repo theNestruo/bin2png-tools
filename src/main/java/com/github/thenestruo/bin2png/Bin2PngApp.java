@@ -46,6 +46,7 @@ public class Bin2PngApp {
 	private static final String ZX = "zx";
 	private static final String ZXCOLOR = "zxcolor";
 	private static final String VGROUP = "vgroup";
+	private static final String VGROUPCOLOR = "vgroupcolor";
 
 	private static final String BIOSFONT = "biosfont";
 
@@ -97,6 +98,7 @@ public class Bin2PngApp {
 				: command.hasOption(ZX) ? new ZxMonochromeVisualizer(width, height)
 				: command.hasOption(ZXCOLOR) ? new ZxColorVisualizer(width, height)
 				: command.hasOption(VGROUP) ? new GroupedVerticalVisualizer(width, height, repeat, spacing)
+				: command.hasOption(VGROUPCOLOR) ? new ColoredGroupedVerticalVisualizer(width, height, repeat, spacing)
 				: new VerticalVisualizer(height, spacing);
 
 		// Generates the image
@@ -173,7 +175,7 @@ public class Bin2PngApp {
 		options.addOption(ZX, false, "Uses the monochrome ZX-ordered graphics visualizer");
 		options.addOption(ZXCOLOR, false, "Uses the ZX-ordered graphics visualizer, followed by CLRTBL data");
 		options.addOption(VGROUP, false, "Uses the grouped vertical visualizer");
-		// options.addOption(ZXVERTICAL, false, "Uses the ZX-ordered graphics visualizer, followed by block color data");
+		options.addOption(VGROUPCOLOR, false, "Uses the grouped vertical visualizer, followed by CLRTBL data");
 		options.addOption("f", BIOSFONT, false, "Checks the file is an MSX BIOS image and extracts the font");
 		return options;
 	}

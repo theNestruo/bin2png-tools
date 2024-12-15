@@ -3,3 +3,5 @@
 .settings
 .factorypath
 target
+test.bat
+test/*
