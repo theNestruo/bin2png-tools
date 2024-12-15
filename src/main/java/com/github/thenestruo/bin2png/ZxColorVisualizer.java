@@ -7,8 +7,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class ZxColorVisualizer extends ZxMonochromeVisualizer {
 
-	protected final int step;
-
 	// Yazioh palette
 	protected static final List<Integer> TMS_COLORS = Arrays.asList(
 		0x404040, //  0 transparent
@@ -29,16 +27,14 @@ public class ZxColorVisualizer extends ZxMonochromeVisualizer {
 		0xFFFFFF  // 15 white
 	);
 
-	public ZxColorVisualizer(final int width, final int height) {
-		super(width, height);
-
-		this.step = width * height / 8;
+	public ZxColorVisualizer(final int width, final int height, final int imageCount, final int spacing) {
+		super(width, height, imageCount, spacing);
 	}
 
 	@Override
 	protected Pair<Integer, Integer> colorsFor(byte[] buffer, int address) {
 
-		int colorValue = this.valueAt(buffer, address + this.step);
+		int colorValue = this.valueAt(buffer, address + this.totalImageSize);
 		return Pair.of(
 			TMS_COLORS.get(colorValue >> 4),
 			TMS_COLORS.get(colorValue & 0x0F));

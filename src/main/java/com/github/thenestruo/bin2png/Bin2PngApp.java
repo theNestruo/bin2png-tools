@@ -86,7 +86,7 @@ public class Bin2PngApp {
 		final Integer height = command.hasOption(HEIGHT)
 				? Integer.parseUnsignedInt(command.getOptionValue(HEIGHT))
 				: null;
-		final int repeat = Integer.parseUnsignedInt(command.getOptionValue(IMAGES, Integer.toString(1)));
+		final int imageCount = Integer.parseUnsignedInt(command.getOptionValue(IMAGES, Integer.toString(1)));
 		final int spacing = Integer.parseUnsignedInt(command.getOptionValue(SPACING, Integer.toString(2)));
 
 		final AbstractVisualizer visualizer =
@@ -95,10 +95,10 @@ public class Bin2PngApp {
 				: command.hasOption(CHARSET) ? new CharsetHorizontalVisualizer(width, spacing)
 				: command.hasOption(HORIZONTAL) ? new HorizontalVisualizer(width, spacing)
 				: command.hasOption(BIOSFONT) ? new HorizontalVisualizer(0)
-				: command.hasOption(ZX) ? new ZxMonochromeVisualizer(width, height)
-				: command.hasOption(ZXCOLOR) ? new ZxColorVisualizer(width, height)
-				: command.hasOption(VGROUP) ? new GroupedVerticalVisualizer(width, height, repeat, spacing)
-				: command.hasOption(VGROUPCOLOR) ? new ColoredGroupedVerticalVisualizer(width, height, repeat, spacing)
+				: command.hasOption(ZX) ? new ZxMonochromeVisualizer(width, height, imageCount, spacing)
+				: command.hasOption(ZXCOLOR) ? new ZxColorVisualizer(width, height, imageCount, spacing)
+				: command.hasOption(VGROUP) ? new GroupedVerticalVisualizer(width, height, imageCount, spacing)
+				: command.hasOption(VGROUPCOLOR) ? new ColoredGroupedVerticalVisualizer(width, height, imageCount, spacing)
 				: new VerticalVisualizer(height, spacing);
 
 		// Generates the image
@@ -128,7 +128,7 @@ public class Bin2PngApp {
 
 			image = visualizer.renderImage(cgtabl);
 			final Long biosFontCrc32 = crc32.getValue();
-			pngFilePath = nextPath(command, String.format("%08x.%s.png", biosFontCrc32, inputFilePath));
+			pngFilePath = nextPath(command, String.format("%08X.%s.png", biosFontCrc32, inputFilePath));
 
 		} else if (command.hasOption(START)) {
 
@@ -145,7 +145,7 @@ public class Bin2PngApp {
 			final byte[] subarray = ArrayUtils.subarray(buffer, startOffset, buffer.length);
 
 			image = visualizer.renderImage(subarray);
-			pngFilePath = nextPath(command, String.format("%s.%04x.png", inputFilePath, startOffset));
+			pngFilePath = nextPath(command, String.format("%s.%04X.png", inputFilePath, startOffset));
 
 		} else {
 			image = visualizer.renderImage(inputFile);

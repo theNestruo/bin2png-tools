@@ -11,14 +11,24 @@ public class ZxMonochromeVisualizer extends AbstractLineSupportVisualizer {
 
 	protected final int width;
 	protected final int height;
+	protected final int imageCount;
+	protected final int spacing;
 
-	public ZxMonochromeVisualizer(final int width, final int height) {
+	protected final int imageSize;
+	protected final int totalImageSize;
+
+	public ZxMonochromeVisualizer(final int width, final int height, final int imageCount, final int spacing) {
 
 		Validate.isTrue((width > 0) && ((width % 8) == 0), "Width %d is not a mutiple of 8", width);
 		Validate.isTrue(height > 0, "Height %d is not a positive number", height);
 
 		this.width = width;
 		this.height = height;
+		this.imageCount = imageCount;
+		this.spacing = spacing;
+
+		this.imageSize = width * height / 8;
+		this.totalImageSize = this.imageSize * imageCount;
 	}
 
 	@Override
@@ -30,9 +40,10 @@ public class ZxMonochromeVisualizer extends AbstractLineSupportVisualizer {
 		final int size = buffer.length;
 
 		// Creates the canvas
-		final BufferedImage image = new BufferedImage(this.width, this.height, BufferedImage.TYPE_3BYTE_BGR);
+		final int totalWidth = (this.width * this.imageCount) + (this.spacing * (this.imageCount - 1));
+		final BufferedImage image = new BufferedImage(totalWidth, this.height, BufferedImage.TYPE_3BYTE_BGR);
 
-		for (int address = 0; address < size; address++) {
+		for (int address = 0; address < Math.min(size, this.totalImageSize); address++) {
 			this.renderLine(buffer, image, address);
 		}
 
@@ -41,12 +52,19 @@ public class ZxMonochromeVisualizer extends AbstractLineSupportVisualizer {
 
 	protected void renderLine(byte[] buffer, BufferedImage image, int address) {
 
+		if (address >= this.totalImageSize) {
+			// (ignored)
+			return;
+		}
+
 		final int value = this.valueAt(buffer, address);
 		final Pair<Integer, Integer> location = this.locationFor(address);
 		final int x = location.getLeft();
 		final int y = location.getRight();
 		final Pair<Integer, Integer> colors = this.colorsFor(buffer, address);
+
 		this.doRenderLine(image, value, x, y, colors);
+
 	}
 
 	@Override
@@ -57,8 +75,12 @@ public class ZxMonochromeVisualizer extends AbstractLineSupportVisualizer {
 
 	protected Pair<Integer, Integer> locationFor(final int address) {
 
-		final int x = Math.min((address * 8) % this.width, this.width -1);
-		final int y = Math.min((address * 8) / this.width, this.height -1);
+		final int image = address / this.imageSize;
+		final int imageX = ((this.width + this.spacing) * image);
+
+		final int x = (((address % this.imageSize) * 8) % this.width) + imageX;
+		final int y = (((address % this.imageSize) * 8) / this.width);
+
 		return Pair.of(x, y);
 	}
 }
