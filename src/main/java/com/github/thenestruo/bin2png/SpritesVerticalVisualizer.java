@@ -8,7 +8,7 @@ public class SpritesVerticalVisualizer extends VerticalVisualizer {
 
 	protected static final Pair<Integer, Integer> SHADOW_COLORS = Pair.of(0x838482, 0x1e1e1e);
 
-	public SpritesVerticalVisualizer(final int targetHeight, final int hSpacing) {
+	public SpritesVerticalVisualizer(final Integer targetHeight, final int hSpacing) {
 		super(targetHeight, hSpacing);
 	}
 

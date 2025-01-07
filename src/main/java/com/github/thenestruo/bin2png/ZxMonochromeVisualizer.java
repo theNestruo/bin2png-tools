@@ -17,8 +17,10 @@ public class ZxMonochromeVisualizer extends AbstractLineSupportVisualizer {
 	protected final int imageSize;
 	protected final int totalImageSize;
 
-	public ZxMonochromeVisualizer(final int width, final int height, final int imageCount, final int spacing) {
+	public ZxMonochromeVisualizer(final Integer width, final Integer height, final int imageCount, final int spacing) {
 
+		Objects.requireNonNull(width);
+		Objects.requireNonNull(height);
 		Validate.isTrue((width > 0) && ((width % 8) == 0), "Width %d is not a mutiple of 8", width);
 		Validate.isTrue(height > 0, "Height %d is not a positive number", height);
 
@@ -32,7 +34,7 @@ public class ZxMonochromeVisualizer extends AbstractLineSupportVisualizer {
 	}
 
 	@Override
-	public BufferedImage renderImage(byte[] buffer) throws IOException {
+	public BufferedImage renderImage(final byte[] buffer) throws IOException {
 
 		Objects.requireNonNull(buffer);
 
@@ -50,7 +52,7 @@ public class ZxMonochromeVisualizer extends AbstractLineSupportVisualizer {
 		return image;
 	}
 
-	protected void renderLine(byte[] buffer, BufferedImage image, int address) {
+	protected void renderLine(final byte[] buffer, final BufferedImage image, final int address) {
 
 		if (address >= this.totalImageSize) {
 			// (ignored)
@@ -68,7 +70,7 @@ public class ZxMonochromeVisualizer extends AbstractLineSupportVisualizer {
 	}
 
 	@Override
-	protected Pair<Integer, Integer> colorsFor(byte[] buffer, int address) {
+	protected Pair<Integer, Integer> colorsFor(final byte[] buffer, final int address) {
 
 		return DEFAULT_COLORS;
 	}

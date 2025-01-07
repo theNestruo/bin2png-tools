@@ -27,14 +27,14 @@ public class ColoredGroupedVerticalVisualizer extends GroupedVerticalVisualizer 
 		0xFFFFFF  // 15 white
 	);
 
-	public ColoredGroupedVerticalVisualizer(int width, int height, int repeat, int spacing) {
+	public ColoredGroupedVerticalVisualizer(final Integer width, final Integer height, final int repeat, final int spacing) {
 		super(width, height, repeat, spacing);
 	}
 
 	@Override
-	protected Pair<Integer, Integer> colorsFor(byte[] buffer, int address) {
+	protected Pair<Integer, Integer> colorsFor(final byte[] buffer, final int address) {
 
-		int colorValue = this.valueAt(buffer, address + this.totalImageSize);
+		final int colorValue = this.valueAt(buffer, address + this.totalImageSize);
 		return Pair.of(
 			TMS_COLORS.get(colorValue >> 4),
 			TMS_COLORS.get(colorValue & 0x0F));

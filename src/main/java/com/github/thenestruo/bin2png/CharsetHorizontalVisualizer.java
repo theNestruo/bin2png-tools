@@ -9,7 +9,7 @@ public class CharsetHorizontalVisualizer extends HorizontalVisualizer {
 	protected static final Pair<Integer, Integer> SHADOW_COLORS = Pair.of(0x838482, 0x1e1e1e);
 
 	public CharsetHorizontalVisualizer(
-			final int targetWidth,
+			final Integer targetWidth,
 			final int vSpacing) {
 		super(targetWidth, vSpacing);
 	}

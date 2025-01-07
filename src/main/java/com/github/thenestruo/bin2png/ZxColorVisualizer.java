@@ -27,14 +27,14 @@ public class ZxColorVisualizer extends ZxMonochromeVisualizer {
 		0xFFFFFF  // 15 white
 	);
 
-	public ZxColorVisualizer(final int width, final int height, final int imageCount, final int spacing) {
+	public ZxColorVisualizer(final Integer width, final Integer height, final int imageCount, final int spacing) {
 		super(width, height, imageCount, spacing);
 	}
 
 	@Override
-	protected Pair<Integer, Integer> colorsFor(byte[] buffer, int address) {
+	protected Pair<Integer, Integer> colorsFor(final byte[] buffer, final int address) {
 
-		int colorValue = this.valueAt(buffer, address + this.totalImageSize);
+		final int colorValue = this.valueAt(buffer, address + this.totalImageSize);
 		return Pair.of(
 			TMS_COLORS.get(colorValue >> 4),
 			TMS_COLORS.get(colorValue & 0x0F));

@@ -12,7 +12,7 @@ public class VerticalVisualizer extends AbstractBlockSupportVisualizer {
 	protected final int hSpacing;
 
 	public VerticalVisualizer(
-			final int targetHeight,
+			final Integer targetHeight,
 			final int hSpacing) {
 		super();
 

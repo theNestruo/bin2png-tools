@@ -1,6 +1,7 @@
 package com.github.thenestruo.bin2png;
 
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
@@ -13,9 +14,10 @@ public class GroupedVerticalVisualizer extends VerticalVisualizer {
 	protected final int imageSize;
 	protected final int totalImageSize;
 
-	public GroupedVerticalVisualizer(int width, int height, int imageCount, int spacing) {
+	public GroupedVerticalVisualizer(final Integer width, final Integer height, final int imageCount, final int spacing) {
 		super(height, spacing);
 
+		Objects.requireNonNull(width);
 		Validate.isTrue((width % 8) == 0, "Width %d is not a mutiple of 8", width);
 
 		this.targetWidth = width;
@@ -26,19 +28,19 @@ public class GroupedVerticalVisualizer extends VerticalVisualizer {
 	}
 
 	@Override
-	protected int computeImageWidth(int size) {
+	protected int computeImageWidth(final int size) {
 
 		return this.targetWidth;
 	}
 
 	@Override
-	protected int computeImageHeight(int size) {
+	protected int computeImageHeight(final int size) {
 
-		return (this.targetHeight * imageCount) + (this.hSpacing * (imageCount - 1));
+		return (this.targetHeight * this.imageCount) + (this.hSpacing * (this.imageCount - 1));
 	}
 
 	@Override
-	protected void renderBlock(byte[] buffer, BufferedImage image, int address) {
+	protected void renderBlock(final byte[] buffer, final BufferedImage image, final int address) {
 
 		if (address >= this.totalImageSize) {
 			// (ignored)

@@ -12,7 +12,7 @@ public class HighlightVerticalVisualizer extends VerticalVisualizer {
 	protected static final Pair<Integer, Integer> ASCII_COLORS = Pair.of(0xB5CEA8, 0x252526);
 	protected static final Pair<Integer, Integer> MUTED_COLORS = Pair.of(0x434442, 0x1e1e1e);
 
-	public HighlightVerticalVisualizer(final int targetHeight, final int hSpacing) {
+	public HighlightVerticalVisualizer(final Integer targetHeight, final int hSpacing) {
 		super(targetHeight, hSpacing);
 	}
 
