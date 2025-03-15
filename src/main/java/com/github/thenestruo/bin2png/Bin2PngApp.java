@@ -1,12 +1,13 @@
 package com.github.thenestruo.bin2png;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.zip.CRC32;
 
@@ -23,8 +24,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.tinylog.Logger;
 
 import com.github.thenestruo.util.FileSystemResource;
 import com.github.thenestruo.util.ReadableResource;
@@ -49,8 +49,6 @@ public class Bin2PngApp {
 	private static final String VGROUPCOLOR = "vgroupcolor";
 
 	private static final String BIOSFONT = "biosfont";
-
-	private static final Logger logger = LoggerFactory.getLogger(Bin2PngApp.class);
 
 	public static void main(final String[] args) throws ParseException, IOException {
 
@@ -77,7 +75,7 @@ public class Bin2PngApp {
 		if (inputFile == null) {
 			return;
 		}
-		logger.debug("Binary file read: {} bytes", inputFile.sizeOf());
+		Logger.debug("Binary file read: {} bytes", inputFile.sizeOf());
 
 		// Reads the parameters
 		final Integer width = command.hasOption(WIDTH)
@@ -153,9 +151,9 @@ public class Bin2PngApp {
 	}
 
 		// Writes the PNG file
-		logger.debug("{}x{} image will be written to PNG file {}", image.getWidth(), image.getHeight(), pngFilePath);
+		Logger.debug("{}x{} image will be written to PNG file {}", image.getWidth(), image.getHeight(), pngFilePath);
 		writePngFile(pngFilePath, image);
-		logger.debug("PNG file {} written", pngFilePath);
+		Logger.debug("PNG file {} written", pngFilePath);
 	}
 
 	private static Options options() {
@@ -209,25 +207,25 @@ public class Bin2PngApp {
 		if (path == null) {
 			return Pair.of(null, null);
 		}
-		final File file = new File(path);
-		if (!file.exists()) {
-			logger.warn("Binary input file {} does not exist", file.getAbsolutePath());
+		final Path file = Path.of(path);
+		if (!Files.exists(file)) {
+			Logger.warn("Binary input file {} does not exist", file.toAbsolutePath());
 			return Pair.of(path, null);
 		}
 
-		logger.debug("Binary input file {} will be read", file.getAbsolutePath());
+		Logger.debug("Binary input file {} will be read", file.toAbsolutePath());
 		return Pair.of(path, new FileSystemResource(file));
 	}
 
 	private static void writePngFile(final String path, final BufferedImage image) throws IOException {
 
-		final File file = new File(path);
+		final Path file = Path.of(path);
 		// if (file.exists()) {
 		// 	logger.warn("PNG output file {} already exists", file.getAbsolutePath());
 		// 	return;
 		// }
 
-		ImageIO.write(image, "PNG", file);
+		ImageIO.write(image, "PNG", file.toFile());
 	}
 
 	private static String nextPath(final CommandLine command, final String defaultValue) {
