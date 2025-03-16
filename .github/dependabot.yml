@@ -1,4 +1,6 @@
 version: 2
+
+# Check for updates to Maven dependencies
 updates:
 - package-ecosystem: "maven"
   directory: "/"
@@ -8,3 +10,9 @@ updates:
     all:
       patterns:
       - "*"
+
+# Check for updates to GitHub Actions
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: "monthly"

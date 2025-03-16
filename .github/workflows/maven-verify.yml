@@ -13,8 +13,9 @@ jobs:
     steps:
 
     - name: Setup Maven
-      uses: s4u/setup-maven-action@v1.14.0
+      uses: s4u/setup-maven-action@v1.18.0
       with:
+        java-version: 21
         settings-servers: |
           [{
             "id": "github-thenestruo-parent",
