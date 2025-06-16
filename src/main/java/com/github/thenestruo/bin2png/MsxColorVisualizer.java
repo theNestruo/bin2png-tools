@@ -2,10 +2,10 @@ package com.github.thenestruo.bin2png;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-public class ColoredGroupedVerticalVisualizer extends GroupedVerticalVisualizer {
+public class MsxColorVisualizer extends MsxMonochromeVisualizer {
 
-	public ColoredGroupedVerticalVisualizer(final Integer width, final Integer height, final int repeat, final int spacing) {
-		super(width, height, repeat, spacing);
+	public MsxColorVisualizer(final int imageCount, final int spacing) {
+		super(8, 8, imageCount, spacing);
 	}
 
 	@Override
@@ -16,4 +16,5 @@ public class ColoredGroupedVerticalVisualizer extends GroupedVerticalVisualizer 
 			TmsColors.TMS_COLORS.get(colorValue >> 4),
 			TmsColors.TMS_COLORS.get(colorValue & 0x0F));
 	}
+
 }

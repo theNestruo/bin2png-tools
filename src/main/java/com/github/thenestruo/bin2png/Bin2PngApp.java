@@ -47,6 +47,9 @@ public class Bin2PngApp {
 	private static final String ZXCOLOR = "zxcolor";
 	private static final String VGROUP = "vgroup";
 	private static final String VGROUPCOLOR = "vgroupcolor";
+	private static final String MSX = "msx";
+	private static final String MSXCOLOR = "msxcolor";
+	private static final String MSXSPRITES = "msxsprites";
 
 	private static final String BIOSFONT = "biosfont";
 
@@ -97,6 +100,9 @@ public class Bin2PngApp {
 				: command.hasOption(ZXCOLOR) ? new ZxColorVisualizer(width, height, imageCount, spacing)
 				: command.hasOption(VGROUP) ? new GroupedVerticalVisualizer(width, height, imageCount, spacing)
 				: command.hasOption(VGROUPCOLOR) ? new ColoredGroupedVerticalVisualizer(width, height, imageCount, spacing)
+				: command.hasOption(MSX) ? new MsxMonochromeVisualizer(imageCount, spacing)
+				: command.hasOption(MSXCOLOR) ? new MsxColorVisualizer(imageCount, spacing)
+				: command.hasOption(MSXSPRITES) ? new MsxSpritesVisualizer(imageCount, spacing)
 				: new VerticalVisualizer(height, spacing);
 
 		// Generates the image
@@ -174,6 +180,9 @@ public class Bin2PngApp {
 		options.addOption(ZXCOLOR, false, "Uses the ZX-ordered graphics visualizer, followed by CLRTBL data");
 		options.addOption(VGROUP, false, "Uses the grouped vertical visualizer");
 		options.addOption(VGROUPCOLOR, false, "Uses the grouped vertical visualizer, followed by CLRTBL data");
+		options.addOption(MSX, false, "Uses the monochrome MSX-ordered graphics visualizer");
+		options.addOption(MSXCOLOR, false, "Uses the MSX-ordered graphics visualizer, followed by CLRTBL data");
+		options.addOption(MSXSPRITES, false, "Uses the MSX-ordered 16x16 sprites visualizer");
 		options.addOption("f", BIOSFONT, false, "Checks the file is an MSX BIOS image and extracts the font");
 		return options;
 	}

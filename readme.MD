@@ -17,8 +17,13 @@ usage: java -jar bin2png.jar
   -l,--highlight  Uses the padding/ASCII/CALLs/JPs highlight visualizer
   -s,--sprites    Uses the 16x16 sprites visualizer
   -c,--charset    Uses the charset graphics visualizer
-  --zx            Uses the monochrome ZX-ordered graphics visualizer
-  --zxcolor       Uses the ZX-ordered graphics visualizer, followed by CLRTBL data
+  -zx             Uses the monochrome ZX-ordered graphics visualizer
+  -zxcolor        Uses the ZX-ordered graphics visualizer, followed by CLRTBL data
+	-vgroup         Uses the grouped vertical visualizer
+	-vgroupcolor    Uses the grouped vertical visualizer, followed by CLRTBL data
+	-msx            Uses the monochrome MSX-ordered graphics visualizer
+	-msxcolor       Uses the MSX-ordered graphics visualizer, followed by CLRTBL data
+	-msxsprites     Uses the MSX-ordered 16x16 sprites visualizer
   -f,--biosfont   Checks the file is an MSX BIOS image and extracts the font
   <input>         Binary input file
   <output>        PNG output file (optional, defaults to <input>.png)
