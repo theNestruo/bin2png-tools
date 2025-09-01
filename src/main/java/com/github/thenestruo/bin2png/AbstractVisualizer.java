@@ -19,7 +19,7 @@ public abstract class AbstractVisualizer {
 		// Reads the data buffer
 		final byte[] buffer;
 		try (final InputStream is = IOUtils.buffer(resource.getInputStream())) {
-			buffer = IOUtils.toByteArray(is);
+			buffer = is.readAllBytes();
 		}
 		Validate.isTrue(buffer.length == (int) resource.sizeOf());
 

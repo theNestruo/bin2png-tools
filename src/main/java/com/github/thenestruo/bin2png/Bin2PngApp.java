@@ -113,7 +113,7 @@ public class Bin2PngApp {
 			// Reads the data buffer
 			final byte[] buffer;
 			try (final InputStream is = IOUtils.buffer(inputFile.getInputStream())) {
-				buffer = IOUtils.toByteArray(is);
+				buffer = is.readAllBytes();
 			}
 
 			// Validates it looks like an MSX BIOS
@@ -139,7 +139,7 @@ public class Bin2PngApp {
 			// Reads the data buffer
 			final byte[] buffer;
 			try (final InputStream is = IOUtils.buffer(inputFile.getInputStream())) {
-				buffer = IOUtils.toByteArray(is);
+				buffer = is.readAllBytes();
 			}
 
 			// Validates start offset and length
