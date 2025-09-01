@@ -18,7 +18,7 @@ public class HorizontalVisualizer extends AbstractBlockSupportVisualizer {
 	public HorizontalVisualizer(final Integer targetWidth, final int vSpacing) {
 		super();
 
-		this.targetWidth = ObjectUtils.defaultIfNull(targetWidth, DEFAULT_WIDTH);
+		this.targetWidth = ObjectUtils.getIfNull(targetWidth, DEFAULT_WIDTH);
 		this.vSpacing = vSpacing;
 
 		Validate.isTrue((this.targetWidth % 8) == 0, "Width %d is not a mutiple of 8", this.targetWidth);

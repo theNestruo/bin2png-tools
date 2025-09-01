@@ -3,9 +3,6 @@ package com.github.thenestruo.bin2png;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -15,11 +12,10 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.MissingOptionException;
-import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
@@ -187,25 +183,28 @@ public class Bin2PngApp {
 		return options;
 	}
 
-	private static boolean showUsage(final CommandLine command, final Options options) {
+	private static boolean showUsage(final CommandLine command, final Options options) throws IOException  {
 
 		return command.hasOption(HELP)
 				? showUsage(options)
 				: false;
 	}
 
-	private static boolean showUsage(final Options options) {
+	private static boolean showUsage(final Options options) throws IOException {
 
 		// (prints in proper order)
-		final HelpFormatter helpFormatter = new HelpFormatter();
-		final PrintWriter pw = new PrintWriter(new OutputStreamWriter(System.out, StandardCharsets.ISO_8859_1));
-		helpFormatter.printUsage(pw, 114, "java -jar bin2png.jar");
-		for (final Option option : options.getOptions()) {
-			helpFormatter.printOptions(pw, 114, new Options().addOption(option), 2, 4);
-		}
-		helpFormatter.printWrapped(pw, 114, "  <input>    Binary input file");
-		helpFormatter.printWrapped(pw, 114, "  <output>   PNG output file (optional, defaults to <input>.png)");
-		pw.flush();
+		HelpFormatter.builder()
+				.setShowSince(false)
+				.get().printHelp(
+					"java -jar bin2png.jar <input> <output>",
+					"with:"
+					+ "\n<input>   Binary input file"
+					+ "\n<output>  PNG output file (optional, defaults to <input>.png)",
+					options.getOptions(),
+					null,
+					true);
+		// helpFormatter.printWrapped(pw, 114, "  <input>    Binary input file");
+		// helpFormatter.printWrapped(pw, 114, "  <output>   PNG output file (optional, defaults to <input>.png)");
 
 		return true;
 	}

@@ -16,7 +16,7 @@ public class VerticalVisualizer extends AbstractBlockSupportVisualizer {
 			final int hSpacing) {
 		super();
 
-		this.targetHeight = ObjectUtils.defaultIfNull(targetHeight, DEFAULT_HEIGHT);
+		this.targetHeight = ObjectUtils.getIfNull(targetHeight, DEFAULT_HEIGHT);
 		this.hSpacing = hSpacing;
 
 		Validate.isTrue((this.targetHeight % 8) == 0, "Height %d is not a mutiple of 8", this.targetHeight);
