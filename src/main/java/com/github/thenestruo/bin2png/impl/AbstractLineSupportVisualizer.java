@@ -1,8 +1,8 @@
-package com.github.thenestruo.bin2png;
+package com.github.thenestruo.bin2png.impl;
 
 import java.awt.image.BufferedImage;
 
-import org.apache.commons.lang3.tuple.Pair;
+import com.github.thenestruo.commons.maps.Pair;
 
 public abstract class AbstractLineSupportVisualizer extends AbstractVisualizer {
 
@@ -19,7 +19,8 @@ public abstract class AbstractLineSupportVisualizer extends AbstractVisualizer {
 	}
 
 	protected final void doRenderLine(
-			final BufferedImage bufferedImage, final int value, final int pX, final int y, final Pair<Integer, Integer> colors) {
+			final BufferedImage bufferedImage, final int value, final int pX, final int y,
+			final Pair<Integer, Integer> colors) {
 
 		final Integer color1 = colors.getLeft();
 		final Integer color0 = colors.getRight();

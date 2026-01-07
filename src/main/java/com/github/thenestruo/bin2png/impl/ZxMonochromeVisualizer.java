@@ -1,11 +1,11 @@
-package com.github.thenestruo.bin2png;
+package com.github.thenestruo.bin2png.impl;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Objects;
 
-import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.tuple.Pair;
+import com.github.thenestruo.commons.Bools;
+import com.github.thenestruo.commons.maps.Pair;
 
 public class ZxMonochromeVisualizer extends AbstractLineSupportVisualizer {
 
@@ -21,15 +21,15 @@ public class ZxMonochromeVisualizer extends AbstractLineSupportVisualizer {
 
 		Objects.requireNonNull(width);
 		Objects.requireNonNull(height);
-		Validate.isTrue((width > 0) && ((width % 8) == 0), "Width %d is not a mutiple of 8", width);
-		Validate.isTrue(height > 0, "Height %d is not a positive number", height);
+		Bools.requireTrue((width > 0) && ((width % 8) == 0), "Width %d is not a mutiple of 8", width);
+		Bools.requireTrue(height > 0, "Height %d is not a positive number", height);
 
 		this.width = width;
 		this.height = height;
 		this.imageCount = imageCount;
 		this.spacing = spacing;
 
-		this.imageSize = width * height / 8;
+		this.imageSize = (width * height) / 8;
 		this.totalImageSize = this.imageSize * imageCount;
 	}
 

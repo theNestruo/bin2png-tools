@@ -1,8 +1,8 @@
-package com.github.thenestruo.bin2png;
+package com.github.thenestruo.bin2png.impl;
 
 import java.awt.image.BufferedImage;
 
-import org.apache.commons.lang3.tuple.Pair;
+import com.github.thenestruo.commons.maps.Pair;
 
 public class SpritesVerticalVisualizer extends VerticalVisualizer {
 

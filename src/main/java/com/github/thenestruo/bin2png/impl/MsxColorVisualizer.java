@@ -1,6 +1,7 @@
-package com.github.thenestruo.bin2png;
+package com.github.thenestruo.bin2png.impl;
 
-import org.apache.commons.lang3.tuple.Pair;
+import com.github.thenestruo.bin2png.TmsColors;
+import com.github.thenestruo.commons.maps.Pair;
 
 public class MsxColorVisualizer extends MsxMonochromeVisualizer {
 
@@ -13,8 +14,8 @@ public class MsxColorVisualizer extends MsxMonochromeVisualizer {
 
 		final int colorValue = this.valueAt(buffer, address + this.totalImageSize);
 		return Pair.of(
-			TmsColors.TMS_COLORS.get(colorValue >> 4),
-			TmsColors.TMS_COLORS.get(colorValue & 0x0F));
+				TmsColors.TMS_COLORS.get(colorValue >> 4),
+				TmsColors.TMS_COLORS.get(colorValue & 0x0F));
 	}
 
 }

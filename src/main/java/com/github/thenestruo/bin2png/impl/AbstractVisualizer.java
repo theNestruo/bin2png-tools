@@ -1,14 +1,11 @@
-package com.github.thenestruo.bin2png;
+package com.github.thenestruo.bin2png.impl;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Objects;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.Validate;
-
-import com.github.thenestruo.util.ReadableResource;
+import com.github.thenestruo.commons.Bools;
+import com.github.thenestruo.commons.io.ReadableResource;
 
 public abstract class AbstractVisualizer {
 
@@ -17,11 +14,8 @@ public abstract class AbstractVisualizer {
 		Objects.requireNonNull(resource);
 
 		// Reads the data buffer
-		final byte[] buffer;
-		try (final InputStream is = IOUtils.buffer(resource.getInputStream())) {
-			buffer = is.readAllBytes();
-		}
-		Validate.isTrue(buffer.length == (int) resource.sizeOf());
+		final byte[] buffer = resource.readAllBytes();
+		Bools.requireTrue(buffer.length == (int) resource.sizeOf());
 
 		return this.renderImage(buffer);
 	}

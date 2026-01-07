@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.github.thenestruo</groupId>
 		<artifactId>thenestruo-cli-parent</artifactId>
-		<version>3.0</version>
+		<version>5.1</version>
 		<relativePath />
 	</parent>
 
@@ -17,15 +17,6 @@
 	<properties>
 		<mainClass>com.github.thenestruo.bin2png.Bin2PngApp</mainClass>
 	</properties>
-
-	<dependencies>
-
-		<dependency>
-			<groupId>com.github.thenestruo</groupId>
-			<artifactId>thenestruo-commons</artifactId>
-		</dependency>
-
-	</dependencies>
 
 	<repositories>
 

@@ -1,8 +1,8 @@
-package com.github.thenestruo.bin2png;
+package com.github.thenestruo.bin2png.impl;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.CharUtils;
-import org.apache.commons.lang3.tuple.Pair;
+import com.github.thenestruo.commons.Chars;
+import com.github.thenestruo.commons.IntArrays;
+import com.github.thenestruo.commons.maps.Pair;
 
 public class HighlightVerticalVisualizer extends VerticalVisualizer {
 
@@ -21,13 +21,14 @@ public class HighlightVerticalVisualizer extends VerticalVisualizer {
 
 		return this.isPadding(buffer, address) ? PADDING_COLORS
 				: this.isAscii(buffer, address) ? ASCII_COLORS
-				: (this.isZ80Call(buffer, address)
-						|| this.isZ80Call(buffer, address + 1)
-						|| this.isZ80Call(buffer, address + 2)) ? CALL_COLORS
-				: (this.isZ80Jump(buffer, address)
-						|| this.isZ80Jump(buffer, address + 1)
-						|| this.isZ80Jump(buffer, address + 2)) ? JUMP_COLORS
-				: MUTED_COLORS;
+						: (this.isZ80Call(buffer, address)
+								|| this.isZ80Call(buffer, address + 1)
+								|| this.isZ80Call(buffer, address + 2)) ? CALL_COLORS
+										: (this.isZ80Jump(buffer, address)
+												|| this.isZ80Jump(buffer, address + 1)
+												|| this.isZ80Jump(buffer, address + 2))
+														? JUMP_COLORS
+														: MUTED_COLORS;
 	}
 
 	private boolean isPadding(final byte[] buffer, final int address) {
@@ -64,8 +65,9 @@ public class HighlightVerticalVisualizer extends VerticalVisualizer {
 	private boolean isZ80Call(final byte[] buffer, final int address) {
 
 		final int value = this.valueAt(buffer, address);
-		return (value >= 0x40) && (value <= 0xbf)
-				&& ArrayUtils.contains(
+		return (value >= 0x40)
+				&& (value <= 0xbf)
+				&& IntArrays.contains(
 						new int[] { 0xcd, 0xdc, 0xfc, 0xd4, 0xc4, 0xf4, 0xec, 0xe4, 0xcc },
 						this.valueAt(buffer, address - 2));
 	}
@@ -73,8 +75,9 @@ public class HighlightVerticalVisualizer extends VerticalVisualizer {
 	private boolean isZ80Jump(final byte[] buffer, final int address) {
 
 		final int value = this.valueAt(buffer, address);
-		return (value >= 0x40) && (value <= 0xbf)
-				&& ArrayUtils.contains(
+		return (value >= 0x40)
+				&& (value <= 0xbf)
+				&& IntArrays.contains(
 						new int[] { 0xc3, 0xda, 0xfa, 0xd2, 0xc2, 0xf2, 0xea, 0xe2, 0xca },
 						this.valueAt(buffer, address - 2));
 	}
@@ -91,6 +94,6 @@ public class HighlightVerticalVisualizer extends VerticalVisualizer {
 
 	private boolean isAscii(final int value) {
 
-		return CharUtils.isAsciiPrintable((char) value);
+		return Chars.isAsciiPrintable((char) value);
 	}
 }

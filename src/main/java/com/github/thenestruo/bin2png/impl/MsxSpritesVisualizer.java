@@ -1,4 +1,4 @@
-package com.github.thenestruo.bin2png;
+package com.github.thenestruo.bin2png.impl;
 
 public class MsxSpritesVisualizer extends MsxMonochromeVisualizer {
 

@@ -1,8 +1,8 @@
-package com.github.thenestruo.bin2png;
+package com.github.thenestruo.bin2png.impl;
 
 import java.awt.image.BufferedImage;
 
-import org.apache.commons.lang3.tuple.Pair;
+import com.github.thenestruo.commons.maps.Pair;
 
 public class CharsetHorizontalVisualizer extends HorizontalVisualizer {
 
@@ -36,7 +36,7 @@ public class CharsetHorizontalVisualizer extends HorizontalVisualizer {
 		final Pair<Integer, Integer> location = this.locationFor(address);
 		final int x = location.getLeft();
 		final int y = location.getRight();
-		this.doRenderBlock(buffer, image, address,    x, y,    DEFAULT_COLORS);
-		this.doRenderBlock(buffer, image, address +8, x, y +8, SHADOW_COLORS);
+		this.doRenderBlock(buffer, image, address, x, y, DEFAULT_COLORS);
+		this.doRenderBlock(buffer, image, address + 8, x, y + 8, SHADOW_COLORS);
 	}
 }

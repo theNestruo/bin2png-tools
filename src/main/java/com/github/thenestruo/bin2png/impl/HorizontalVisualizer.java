@@ -1,8 +1,9 @@
-package com.github.thenestruo.bin2png;
+package com.github.thenestruo.bin2png.impl;
 
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.tuple.Pair;
+import java.util.Optional;
+
+import com.github.thenestruo.commons.Bools;
+import com.github.thenestruo.commons.maps.Pair;
 
 public class HorizontalVisualizer extends AbstractBlockSupportVisualizer {
 
@@ -16,12 +17,10 @@ public class HorizontalVisualizer extends AbstractBlockSupportVisualizer {
 	}
 
 	public HorizontalVisualizer(final Integer targetWidth, final int vSpacing) {
-		super();
-
-		this.targetWidth = ObjectUtils.getIfNull(targetWidth, DEFAULT_WIDTH);
+		this.targetWidth = Optional.ofNullable(targetWidth).orElse(DEFAULT_WIDTH);
 		this.vSpacing = vSpacing;
 
-		Validate.isTrue((this.targetWidth % 8) == 0, "Width %d is not a mutiple of 8", this.targetWidth);
+		Bools.requireTrue((this.targetWidth % 8) == 0, "Width %d is not a mutiple of 8", this.targetWidth);
 	}
 
 	@Override

@@ -1,13 +1,14 @@
-package com.github.thenestruo.bin2png;
+package com.github.thenestruo.bin2png.impl;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Objects;
 
-import org.apache.commons.lang3.tuple.Pair;
+import com.github.thenestruo.commons.maps.Pair;
 
 public abstract class AbstractBlockSupportVisualizer extends AbstractLineSupportVisualizer {
 
+	@Override
 	public final BufferedImage renderImage(final byte[] buffer) throws IOException {
 
 		Objects.requireNonNull(buffer);
@@ -43,12 +44,12 @@ public abstract class AbstractBlockSupportVisualizer extends AbstractLineSupport
 	protected abstract Pair<Integer, Integer> locationFor(int address);
 
 	protected final void doRenderBlock(
-			final byte[] buffer, final BufferedImage bufferedImage, final int pAddress, final int x, final int pY, final Pair<Integer, Integer> colorsForced) {
+			final byte[] buffer, final BufferedImage bufferedImage, final int pAddress, final int x, final int pY,
+			final Pair<Integer, Integer> colorsForced) {
 
 		for (int y = pY, address = pAddress; y < (pY + 8); y++, address++) {
 			final int value = this.valueAt(buffer, address);
-			final Pair<Integer, Integer> colors =
-					colorsForced != null ? colorsForced : this.colorsFor(buffer, address);
+			final Pair<Integer, Integer> colors = colorsForced != null ? colorsForced : this.colorsFor(buffer, address);
 			this.doRenderLine(bufferedImage, value, x, y, colors);
 		}
 	}
