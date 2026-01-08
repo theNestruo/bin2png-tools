@@ -38,7 +38,7 @@ import picocli.CommandLine.Parameters;
 public class Bin2PngApp implements Callable<Integer> {
 
 	public static void main(final String... args) {
-		new CommandLine(new Bin2PngApp()).execute(args);
+		System.exit(new CommandLine(new Bin2PngApp()).execute(args));
 	}
 
 	@Option(names = { "-h", "--help" }, usageHelp = true, description = "shows usage")
@@ -194,41 +194,43 @@ public class Bin2PngApp implements Callable<Integer> {
 	}
 
 	private AbstractVisualizer buildVisualizer() {
-		if (this.mode.isHighlight) {
-			return new HighlightVerticalVisualizer(this.height, this.spacing);
-		}
-		if (this.mode.isSprites) {
-			return new SpritesVerticalVisualizer(this.height, this.spacing);
-		}
-		if (this.mode.isCharset) {
-			return new CharsetHorizontalVisualizer(this.width, this.spacing);
-		}
-		if (this.mode.isHorizontal) {
-			return new HorizontalVisualizer(this.width, this.spacing);
-		}
-		if (this.mode.isBiosFont) {
-			return new HorizontalVisualizer(0);
-		}
-		if (this.mode.isZxMonochrome) {
-			return new ZxMonochromeVisualizer(this.width, this.height, this.imageCount, this.spacing);
-		}
-		if (this.mode.isZxColor) {
-			return new ZxColorVisualizer(this.width, this.height, this.imageCount, this.spacing);
-		}
-		if (this.mode.isVGroupMonochrome) {
-			return new GroupedVerticalVisualizer(this.width, this.height, this.imageCount, this.spacing);
-		}
-		if (this.mode.isVGroupColor) {
-			return new ColoredGroupedVerticalVisualizer(this.width, this.height, this.imageCount, this.spacing);
-		}
-		if (this.mode.isMsxMonochrome) {
-			return new MsxMonochromeVisualizer(this.imageCount, this.spacing);
-		}
-		if (this.mode.isMsxColor) {
-			return new MsxColorVisualizer(this.imageCount, this.spacing);
-		}
-		if (this.mode.isMsxSprites) {
-			return new MsxSpritesVisualizer(this.imageCount, this.spacing);
+		if (this.mode != null) {
+			if (this.mode.isHighlight) {
+				return new HighlightVerticalVisualizer(this.height, this.spacing);
+			}
+			if (this.mode.isSprites) {
+				return new SpritesVerticalVisualizer(this.height, this.spacing);
+			}
+			if (this.mode.isCharset) {
+				return new CharsetHorizontalVisualizer(this.width, this.spacing);
+			}
+			if (this.mode.isHorizontal) {
+				return new HorizontalVisualizer(this.width, this.spacing);
+			}
+			if (this.mode.isBiosFont) {
+				return new HorizontalVisualizer(0);
+			}
+			if (this.mode.isZxMonochrome) {
+				return new ZxMonochromeVisualizer(this.width, this.height, this.imageCount, this.spacing);
+			}
+			if (this.mode.isZxColor) {
+				return new ZxColorVisualizer(this.width, this.height, this.imageCount, this.spacing);
+			}
+			if (this.mode.isVGroupMonochrome) {
+				return new GroupedVerticalVisualizer(this.width, this.height, this.imageCount, this.spacing);
+			}
+			if (this.mode.isVGroupColor) {
+				return new ColoredGroupedVerticalVisualizer(this.width, this.height, this.imageCount, this.spacing);
+			}
+			if (this.mode.isMsxMonochrome) {
+				return new MsxMonochromeVisualizer(this.imageCount, this.spacing);
+			}
+			if (this.mode.isMsxColor) {
+				return new MsxColorVisualizer(this.imageCount, this.spacing);
+			}
+			if (this.mode.isMsxSprites) {
+				return new MsxSpritesVisualizer(this.imageCount, this.spacing);
+			}
 		}
 		return new VerticalVisualizer(this.height, this.spacing);
 	}
