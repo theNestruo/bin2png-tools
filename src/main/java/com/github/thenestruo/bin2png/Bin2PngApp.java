@@ -29,6 +29,7 @@ import com.github.thenestruo.commons.Bools;
 import com.github.thenestruo.commons.io.Paths;
 
 import picocli.CommandLine;
+import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -67,41 +68,51 @@ public class Bin2PngApp implements Callable<Integer> {
 	@Option(names = { "-spacing" }, description = "Spacing, in pixels (default: 2)", defaultValue = "2")
 	private Integer spacing;
 
-	@Option(names = { "-h", "--horizontal" }, description = "Uses the horizontal visualizer")
-	private boolean isHorizontal;
+	@ArgGroup
+	private Mode mode;
 
-	@Option(names = { "-l", "--highlight" }, description = "Uses the padding/ASCII/CALLs/JPs highlight visualizer")
-	private boolean isHighlight;
+	static class Mode {
 
-	@Option(names = { "-s", "--sprites" }, description = "Uses the 16x16 sprites visualizer")
-	private boolean isSprites;
+		@Option(names = { "--horizontal" }, description = "Uses the horizontal visualizer")
+		private boolean isHorizontal;
 
-	@Option(names = { "-c", "--charset" }, description = "Uses the charset graphics visualizer")
-	private boolean isCharset;
+		@Option(names = { "-l", "--highlight" }, description = "Uses the padding/ASCII/CALLs/JPs highlight visualizer")
+		private boolean isHighlight;
 
-	@Option(names = { "-zx" }, description = "Uses the monochrome ZX-ordered graphics visualizer")
-	private boolean isZxMonochrome;
+		@Option(names = { "-s", "--sprites" }, description = "Uses the 16x16 sprites visualizer")
+		private boolean isSprites;
 
-	@Option(names = { "-zxcolor" }, description = "Uses the ZX-ordered graphics visualizer, followed by CLRTBL data")
-	private boolean isZxColor;
+		@Option(names = { "-c", "--charset" }, description = "Uses the charset graphics visualizer")
+		private boolean isCharset;
 
-	@Option(names = { "-vgroup" }, description = "Uses the grouped vertical visualizer")
-	private boolean isVGroupMonochrome;
+		@Option(names = { "-zx" }, description = "Uses the monochrome ZX-ordered graphics visualizer")
+		private boolean isZxMonochrome;
 
-	@Option(names = { "-vgroupcolor" }, description = "Uses the grouped vertical visualizer, followed by CLRTBL data")
-	private boolean isVGroupColor;
+		@Option(names = { "-zxcolor" },
+				description = "Uses the ZX-ordered graphics visualizer, followed by CLRTBL data")
+		private boolean isZxColor;
 
-	@Option(names = { "-msx" }, description = "Uses the monochrome MSX-ordered graphics visualizer")
-	private boolean isMsxMonochrome;
+		@Option(names = { "-vgroup" }, description = "Uses the grouped vertical visualizer")
+		private boolean isVGroupMonochrome;
 
-	@Option(names = { "-msxcolor" }, description = "Uses the MSX-ordered graphics visualizer, followed by CLRTBL data")
-	private boolean isMsxColor;
+		@Option(names = { "-vgroupcolor" },
+				description = "Uses the grouped vertical visualizer, followed by CLRTBL data")
+		private boolean isVGroupColor;
 
-	@Option(names = { "-msxsprites" }, description = "Uses the MSX-ordered 16x16 sprites visualizer")
-	private boolean isMsxSprites;
+		@Option(names = { "-msx" }, description = "Uses the monochrome MSX-ordered graphics visualizer")
+		private boolean isMsxMonochrome;
 
-	@Option(names = { "-f", "-biosfont" }, description = "Checks the file is an MSX BIOS image and extracts the font")
-	private boolean isBiosFont;
+		@Option(names = { "-msxcolor" },
+				description = "Uses the MSX-ordered graphics visualizer, followed by CLRTBL data")
+		private boolean isMsxColor;
+
+		@Option(names = { "-msxsprites" }, description = "Uses the MSX-ordered 16x16 sprites visualizer")
+		private boolean isMsxSprites;
+
+		@Option(names = { "-f", "-biosfont" },
+				description = "Checks the file is an MSX BIOS image and extracts the font")
+		private boolean isBiosFont;
+	}
 
 	@Override
 	public Integer call() throws Exception {
@@ -114,32 +125,12 @@ public class Bin2PngApp implements Callable<Integer> {
 		Logger.debug("Binary file read: {} bytes", bytes.length);
 
 		// Reads the parameters
-		final AbstractVisualizer visualizer = this.isHighlight
-				? new HighlightVerticalVisualizer(this.height, this.spacing)
-				: this.isSprites ? new SpritesVerticalVisualizer(this.height, this.spacing)
-				: this.isCharset ? new CharsetHorizontalVisualizer(this.width, this.spacing)
-				: this.isHorizontal ? new HorizontalVisualizer(this.width, this.spacing)
-				: this.isBiosFont ? new HorizontalVisualizer(0)
-				//
-				: this.isZxMonochrome
-						? new ZxMonochromeVisualizer(this.width, this.height, this.imageCount, this.spacing)
-				: this.isZxColor
-						? new ZxColorVisualizer(this.width, this.height, this.imageCount, this.spacing)
-				//
-				: this.isVGroupMonochrome
-						? new GroupedVerticalVisualizer(this.width, this.height, this.imageCount, this.spacing)
-				: this.isVGroupColor
-						? new ColoredGroupedVerticalVisualizer(this.width, this.height, this.imageCount, this.spacing)
-				//
-				: this.isMsxMonochrome ? new MsxMonochromeVisualizer(this.imageCount, this.spacing)
-				: this.isMsxColor ? new MsxColorVisualizer(this.imageCount, this.spacing)
-				: this.isMsxSprites ? new MsxSpritesVisualizer(this.imageCount, this.spacing)
-				: new VerticalVisualizer(this.height, this.spacing);
+		final AbstractVisualizer visualizer = this.buildVisualizer();
 
 		// Generates the image
 		final BufferedImage image;
 		final Path outputPath;
-		if (this.isBiosFont) {
+		if (this.mode.isBiosFont) {
 
 			// Reads the data buffer
 			final byte[] buffer = Files.readAllBytes(this.inputPath);
@@ -202,13 +193,53 @@ public class Bin2PngApp implements Callable<Integer> {
 		return Files.readAllBytes(path);
 	}
 
-	private void writePngFile(final Path path, final BufferedImage image) throws IOException {
-
-		ImageIO.write(image, "PNG", path.toFile());
+	private AbstractVisualizer buildVisualizer() {
+		if (this.mode.isHighlight) {
+			return new HighlightVerticalVisualizer(this.height, this.spacing);
+		}
+		if (this.mode.isSprites) {
+			return new SpritesVerticalVisualizer(this.height, this.spacing);
+		}
+		if (this.mode.isCharset) {
+			return new CharsetHorizontalVisualizer(this.width, this.spacing);
+		}
+		if (this.mode.isHorizontal) {
+			return new HorizontalVisualizer(this.width, this.spacing);
+		}
+		if (this.mode.isBiosFont) {
+			return new HorizontalVisualizer(0);
+		}
+		if (this.mode.isZxMonochrome) {
+			return new ZxMonochromeVisualizer(this.width, this.height, this.imageCount, this.spacing);
+		}
+		if (this.mode.isZxColor) {
+			return new ZxColorVisualizer(this.width, this.height, this.imageCount, this.spacing);
+		}
+		if (this.mode.isVGroupMonochrome) {
+			return new GroupedVerticalVisualizer(this.width, this.height, this.imageCount, this.spacing);
+		}
+		if (this.mode.isVGroupColor) {
+			return new ColoredGroupedVerticalVisualizer(this.width, this.height, this.imageCount, this.spacing);
+		}
+		if (this.mode.isMsxMonochrome) {
+			return new MsxMonochromeVisualizer(this.imageCount, this.spacing);
+		}
+		if (this.mode.isMsxColor) {
+			return new MsxColorVisualizer(this.imageCount, this.spacing);
+		}
+		if (this.mode.isMsxSprites) {
+			return new MsxSpritesVisualizer(this.imageCount, this.spacing);
+		}
+		return new VerticalVisualizer(this.height, this.spacing);
 	}
 
 	private Path outputPath(final String suffix) {
 
 		return this.outputPath != null ? this.outputPath : Paths.append(this.inputPath, suffix);
+	}
+
+	private void writePngFile(final Path path, final BufferedImage image) throws IOException {
+
+		ImageIO.write(image, "PNG", path.toFile());
 	}
 }
