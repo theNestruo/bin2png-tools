@@ -6,13 +6,13 @@
 	<parent>
 		<groupId>com.github.thenestruo</groupId>
 		<artifactId>thenestruo-cli-parent</artifactId>
-		<version>5.3</version>
+		<version>5.4</version>
 		<relativePath />
 	</parent>
 
 	<groupId>com.github.thenestruo.bin2png</groupId>
 	<artifactId>bin2png</artifactId>
-	<version>4.0</version>
+	<version>5.0</version>
 
 	<properties>
 		<mainClass>com.github.thenestruo.bin2png.Bin2PngApp</mainClass>

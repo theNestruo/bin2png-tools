@@ -130,7 +130,7 @@ public class Bin2PngApp implements Callable<Integer> {
 		// Generates the image
 		final BufferedImage image;
 		final Path outputPath;
-		if (this.mode.isBiosFont) {
+		if (this.mode != null && this.mode.isBiosFont) {
 
 			// Reads the data buffer
 			final byte[] buffer = Files.readAllBytes(this.inputPath);
