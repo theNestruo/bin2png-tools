@@ -12,7 +12,7 @@
 
 	<groupId>com.github.thenestruo.bin2png</groupId>
 	<artifactId>bin2png</artifactId>
-	<version>5.0</version>
+	<version>2026.02</version>
 
 	<properties>
 		<mainClass>com.github.thenestruo.bin2png.Bin2PngApp</mainClass>

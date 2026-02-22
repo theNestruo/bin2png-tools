@@ -1,0 +1,36 @@
+name: Verify and release on tag
+
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+    - "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Setup Maven
+      uses: s4u/setup-maven-action@v1.19.0
+      with:
+        java-version: 21
+        settings-servers: |
+          [{
+            "id": "github-thenestruo-parent",
+            "username": "theNestruo",
+            "password": "${{ secrets.THENESTRUO_PARENT_PASSWORD }}"
+          }]
+
+    - name: Verify
+      run: mvn --batch-mode verify
+
+    - name: Draft a GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        draft: true
+        files: target/bin2png.jar
+        fail_on_unmatched_files: true
