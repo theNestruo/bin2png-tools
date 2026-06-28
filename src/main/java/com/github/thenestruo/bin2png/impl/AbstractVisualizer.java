@@ -28,4 +28,12 @@ public abstract class AbstractVisualizer {
 				? Byte.toUnsignedInt(buffer[address])
 				: 0x00;
 	}
+
+	protected int wordValueAt(final byte[] buffer, final int address) {
+
+		return (address >= 0) && (address < buffer.length - 1)
+				? (   Byte.toUnsignedInt(buffer[address    ])
+					+ Byte.toUnsignedInt(buffer[address + 1]) * 0x0100)
+				: 0x00;
+	}
 }
