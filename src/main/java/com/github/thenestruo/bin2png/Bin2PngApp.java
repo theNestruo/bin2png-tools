@@ -152,7 +152,7 @@ public class Bin2PngApp implements Callable<Integer> {
 
 			image = visualizer.renderImage(cgtabl);
 			final Long biosFontCrc32 = crc32.getValue();
-			outputPath = this.outputPath(String.format(".%08X.png", biosFontCrc32));
+			outputPath = this.outputPath(".%08X.png".formatted(biosFontCrc32));
 
 		} else if (this.start > 0) {
 
@@ -162,7 +162,7 @@ public class Bin2PngApp implements Callable<Integer> {
 			final byte[] subarray = Arrays.copyOfRange(bytes, this.start, bytes.length);
 
 			image = visualizer.renderImage(subarray);
-			outputPath = this.outputPath(String.format(".%04X.png", this.start));
+			outputPath = this.outputPath(".%04X.png".formatted(this.start));
 
 		} else {
 			image = visualizer.renderImage(Files.readAllBytes(this.inputPath));
