@@ -28,21 +28,21 @@ public class HighlightVerticalVisualizer extends VerticalVisualizer {
 			return ASCII_COLORS;
 		}
 
-		if (this.isZ80Call(buffer, address)
-				|| this.isZ80Call(buffer, address + 1)
-				|| this.isZ80Call(buffer, address + 2)) {
+		if (this.isZ80Call(buffer, address, true)
+				|| this.isZ80Call(buffer, address + 1, true)
+				|| this.isZ80Call(buffer, address + 2, true)) {
 			return CALL_COLORS;
 		}
 
-		if (this.isZ80Jump(buffer, address)
-				|| this.isZ80Jump(buffer, address + 1)
-				|| this.isZ80Jump(buffer, address + 2)) {
+		if (this.isZ80Jump(buffer, address, true)
+				|| this.isZ80Jump(buffer, address + 1, true)
+				|| this.isZ80Jump(buffer, address + 2, true)) {
 			return JUMP_COLORS;
 		}
 
 		if (this.isZ80Ret(buffer, address)
-			&& ((this.isZ80Call(buffer, address - 1)
-					|| this.isZ80Jump(buffer, address - 1)))) {
+			&& ((this.isZ80Call(buffer, address - 1, false)
+					|| this.isZ80Jump(buffer, address - 1, false)))) {
 			return RET_COLORS;
 		}
 
@@ -80,25 +80,83 @@ public class HighlightVerticalVisualizer extends VerticalVisualizer {
 		return false;
 	}
 
-	private boolean isZ80Call(final byte[] buffer, final int address) {
+	private boolean isZ80Call(final byte[] buffer, final int address, final boolean allowUnconditional) {
 
-		final int[] callOpcodes = new int[] { 0xcd, 0xdc, 0xfc, 0xd4, 0xc4, 0xf4, 0xec, 0xe4, 0xcc };
+		final int[] allCallOpcodes = new int[] {
+			0xcd,	// CALL nn
+			0xdc,	// CALL C, nn
+			0xfc,	// CALL M, nn
+			0xd4,	// CALL NC, nn
+			0xc4,	// CALL NZ, nn
+			0xf4,	// CALL P, nn
+			0xec,	// CALL PE, nn
+			0xe4,	// CALL PO, nn
+			0xcc	// CALL Z, nn
+		};
 
-		return IntArrays.contains(callOpcodes, this.valueAt(buffer, address - 2))
-				&& this.isZ80CallOrJumpTarget(this.wordValueAt(buffer, address - 1));
+		final int[] conditionalCallOpcodes = new int[] {
+			0xdc,	// CALL C, nn
+			0xfc,	// CALL M, nn
+			0xd4,	// CALL NC, nn
+			0xc4,	// CALL NZ, nn
+			0xf4,	// CALL P, nn
+			0xec,	// CALL PE, nn
+			0xe4,	// CALL PO, nn
+			0xcc	// CALL Z, nn
+		};
+
+		return IntArrays.contains(
+					allowUnconditional ? allCallOpcodes : conditionalCallOpcodes,
+					this.valueAt(buffer, address - 2))
+				&& this.isZ80CallOrJumpTarget(
+					this.wordValueAt(buffer, address - 1));
 	}
 
-	private boolean isZ80Jump(final byte[] buffer, final int address) {
+	private boolean isZ80Jump(final byte[] buffer, final int address, final boolean allowUnconditional) {
 
-		final int[] jumpOpcodes = new int[] { 0xc3, 0xda, 0xfa, 0xd2, 0xc2, 0xf2, 0xea, 0xe2, 0xca };
+		final int[] allJumpOpcodes = new int[] {
+			0xc3,	// JP nn
+			0xda,	// JP C, nn
+			0xfa,	// JP M, nn
+			0xd2,	// JP NC, nn
+			0xc2,	// JP NZ, nn
+			0xf2,	// JP P, nn
+			0xea,	// JP PE, nn
+			0xe2,	// JP PO, nn
+			0xca	// JP Z, nn
+		};
 
-		return IntArrays.contains(jumpOpcodes, this.valueAt(buffer, address - 2))
-				&& this.isZ80CallOrJumpTarget(this.wordValueAt(buffer, address - 1));
+		final int[] conditionalJumpOpcodes = new int[] {
+			0xda,	// JP C, nn
+			0xfa,	// JP M, nn
+			0xd2,	// JP NC, nn
+			0xc2,	// JP NZ, nn
+			0xf2,	// JP P, nn
+			0xea,	// JP PE, nn
+			0xe2,	// JP PO, nn
+			0xca	// JP Z, nn
+		};
+
+		return IntArrays.contains(
+					allowUnconditional ? allJumpOpcodes : conditionalJumpOpcodes,
+					this.valueAt(buffer, address - 2))
+				&& this.isZ80CallOrJumpTarget(
+					this.wordValueAt(buffer, address - 1));
 	}
 
 	private boolean isZ80Ret(final byte[] buffer, final int address) {
 
-		final int[] retOpcodes = new int[] { 0xc9, 0xd8, 0xf8, 0xd0, 0xc0, 0xf0, 0xe8, 0xe0, 0xc8 };
+		final int[] retOpcodes = new int[] {
+			0xc9,	// RET
+			0xd8,	// RET C
+			0xf8,	// RET M
+			0xd0,	// RET NC
+			0xc0,	// RET NZ
+			0xf0,	// RET P
+			0xe8,	// RET PE
+			0xe0,	// RET PO
+			0xc8	// RET Z
+		};
 
 		return IntArrays.contains(retOpcodes, this.valueAt(buffer, address));
 	}
