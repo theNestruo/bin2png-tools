@@ -7,6 +7,8 @@ import java.util.Objects;
 import com.github.thenestruo.commons.Bools;
 import com.github.thenestruo.commons.maps.Pair;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public class ZxMonochromeVisualizer extends AbstractLineSupportVisualizer {
 
 	protected final int width;
@@ -17,6 +19,7 @@ public class ZxMonochromeVisualizer extends AbstractLineSupportVisualizer {
 	protected final int imageSize;
 	protected final int totalImageSize;
 
+	@SuppressFBWarnings(value = "CT_CONSTRUCTOR_THROW")
 	public ZxMonochromeVisualizer(final Integer width, final Integer height, final int imageCount, final int spacing) {
 
 		Objects.requireNonNull(width);
